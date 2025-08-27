@@ -8,7 +8,11 @@
 import UIKit
 
 protocol ModalScreenViewControllerDelegate: AnyObject {
-    func modalScreenViewController(_ controller: ModalScreenViewController, didEnterName name: String, icon: String)
+    func modalScreenViewController(
+        _ controller: ModalScreenViewController,
+        didEnterName name: String,
+        icon: String
+    )
 }
 
 final class ModalScreenViewController: UIViewController, UITextFieldDelegate {
@@ -16,132 +20,187 @@ final class ModalScreenViewController: UIViewController, UITextFieldDelegate {
     weak var delegate: ModalScreenViewControllerDelegate?
     var selectedIcon: String?
     
+    private let containerView = UIView()
+    private let titleLabel = UILabel()
+    private let closeButton = UIButton()
+    private let descriptionForIcons = UILabel()
+    private let descriptionForTextField = UILabel()
+    private let buttonOkModalScreen = UIButton()
+    private let nameOfRoomTextField = UITextField()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gray.withAlphaComponent(0.5)
+        nameOfRoomTextField.delegate = self
         
-        nameTextField.delegate = self
-        
-        let containerView = UIView()
+        setupUI()
+        setupLayout()
+    }
+    
+    private func setupUI() {
+        view.addSubview(containerView)
         containerView.backgroundColor = .white
         containerView.layer.cornerRadius = 15
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(containerView)
-        NSLayoutConstraint.activate([
-            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            containerView.widthAnchor.constraint(equalToConstant: 300),
-            containerView.heightAnchor.constraint(equalToConstant: 300)])
-        
         containerView.addSubview(titleLabel)
-        NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 15)
-        ])
-        
-        containerView.addSubview(descriptionForIcons)
-        NSLayoutConstraint.activate([
-            descriptionForIcons.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-            descriptionForIcons.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            descriptionForIcons.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16)])
-        
-        containerView.addSubview(iconsButtonsStackView)
-        NSLayoutConstraint.activate([
-            iconsButtonsStackView.topAnchor.constraint(equalTo: descriptionForIcons.bottomAnchor, constant: 5),
-            iconsButtonsStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            iconsButtonsStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            iconsButtonsStackView.heightAnchor.constraint(equalToConstant: 40)
-        ])
-        
-        containerView.addSubview(descriptionForTextField)
-        NSLayoutConstraint.activate([
-            descriptionForTextField.topAnchor.constraint(equalTo: iconsButtonsStackView.bottomAnchor, constant: 10),
-            descriptionForTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            descriptionForTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16)])
-        
-        containerView.addSubview(nameTextField)
-        NSLayoutConstraint.activate([
-            nameTextField.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            nameTextField.topAnchor.constraint(equalTo: descriptionForTextField.bottomAnchor, constant: 5),
-            nameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            nameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16)
-        ])
-        
-        containerView.addSubview(buttonOkModalScreen)
-        buttonOkModalScreen.addTarget(self, action: #selector(okPressed), for: .touchUpInside)
-        NSLayoutConstraint.activate([
-            buttonOkModalScreen.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            buttonOkModalScreen.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 10),
-            buttonOkModalScreen.widthAnchor.constraint(equalToConstant: 100),
-            buttonOkModalScreen.heightAnchor.constraint(equalToConstant: 45)
-        ])
+        titleLabel.font = .boldSystemFont(ofSize: 17)
+        titleLabel.textAlignment = .center
+        titleLabel.text = "Add room"
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(closeButton)
-        closeButton.addTarget(self, action: #selector(closePressed), for: .touchUpInside)
-        NSLayoutConstraint.activate([
-            closeButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 15),
-            closeButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -15),
-            closeButton.widthAnchor.constraint(equalToConstant: 15),
-            closeButton.heightAnchor.constraint(equalToConstant: 15)
-        ])
+        closeButton.addTarget(
+            self,
+            action: #selector(closePressed),
+            for: .touchUpInside
+        )
+        closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        closeButton.tintColor = .label
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        containerView.addSubview(descriptionForIcons)
+        descriptionForIcons.font = .systemFont(ofSize: 13)
+        descriptionForIcons.textAlignment = .left
+        descriptionForIcons.text = "Select icon for room:"
+        descriptionForIcons.translatesAutoresizingMaskIntoConstraints = false
+        
+        containerView.addSubview(iconsButtonsStackView)
+        
+        containerView.addSubview(descriptionForTextField)
+        descriptionForTextField.font = .systemFont(ofSize: 13)
+        descriptionForTextField.textAlignment = .left
+        descriptionForTextField.text = "Input room name:"
+        descriptionForTextField.translatesAutoresizingMaskIntoConstraints =
+        false
+        
+        containerView.addSubview(nameOfRoomTextField)
+        nameOfRoomTextField.placeholder = "Enter room name"
+        nameOfRoomTextField.borderStyle = .roundedRect
+        nameOfRoomTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        containerView.addSubview(buttonOkModalScreen)
+        buttonOkModalScreen.addTarget(
+            self,
+            action: #selector(okPressed),
+            for: .touchUpInside
+        )
+        buttonOkModalScreen.setTitle("Ok", for: .normal)
+        buttonOkModalScreen.setTitleColor(.white, for: .normal)
+        buttonOkModalScreen.layer.cornerRadius = 15
+        buttonOkModalScreen.backgroundColor = .systemBlue
+        buttonOkModalScreen.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 17)
-        label.textAlignment = .center
-        label.text = "Add room"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let closeButton: UIButton = {
-       let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "xmark"), for: .normal)
-        button.tintColor = .label
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private let descriptionForIcons: UILabel = {
-       let descriptionLabel = UILabel()
-        descriptionLabel.font = .systemFont(ofSize: 13)
-        descriptionLabel.textAlignment = .left
-        descriptionLabel.text = "Select icon for room:"
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        return descriptionLabel
-    }()
-    
-    private let descriptionForTextField: UILabel = {
-       let descriptionText = UILabel()
-        descriptionText.font = .systemFont(ofSize: 13)
-        descriptionText.textAlignment = .left
-        descriptionText.text = "Input room name:"
-        descriptionText.translatesAutoresizingMaskIntoConstraints = false
-        return descriptionText
-    }()
-    
-    private let buttonOkModalScreen: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Ok", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 15
-        button.backgroundColor = .systemBlue
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private let nameTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter room name"
-        textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
+    private func setupLayout() {
+        containerView.centerXAnchor.constraint(
+            equalTo: view.centerXAnchor
+        ).isActive = true
+        containerView.centerYAnchor.constraint(
+            equalTo: view.centerYAnchor
+        ).isActive = true
+        containerView.widthAnchor.constraint(
+            equalToConstant: 300
+        ).isActive = true
+        containerView.heightAnchor.constraint(
+            equalToConstant: 300
+        ).isActive = true
+        
+        titleLabel.centerXAnchor.constraint(
+            equalTo: containerView.centerXAnchor
+        ).isActive = true
+        titleLabel.topAnchor.constraint(
+            equalTo: containerView.topAnchor,
+            constant: 15
+        ).isActive = true
+        
+        descriptionForIcons.topAnchor.constraint(
+            equalTo: titleLabel.bottomAnchor,
+            constant: 20
+        ).isActive = true
+        descriptionForIcons.leadingAnchor.constraint(
+            equalTo: containerView.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        descriptionForIcons.trailingAnchor.constraint(
+            equalTo: containerView.trailingAnchor,
+            constant: -16
+        ).isActive = true
+        
+        iconsButtonsStackView.topAnchor.constraint(
+            equalTo: descriptionForIcons.bottomAnchor,
+            constant: 5
+        ).isActive = true
+        iconsButtonsStackView.leadingAnchor.constraint(
+            equalTo: containerView.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        iconsButtonsStackView.trailingAnchor.constraint(
+            equalTo: containerView.trailingAnchor,
+            constant: -16
+        ).isActive = true
+        iconsButtonsStackView.heightAnchor.constraint(
+            equalToConstant: 40
+        ).isActive = true
+        
+        descriptionForTextField.topAnchor.constraint(
+            equalTo: iconsButtonsStackView.bottomAnchor,
+            constant: 20
+        ).isActive = true
+        descriptionForTextField.leadingAnchor.constraint(
+            equalTo: containerView.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        descriptionForTextField.trailingAnchor.constraint(
+            equalTo: containerView.trailingAnchor,
+            constant: -16
+        ).isActive = true
+        
+        nameOfRoomTextField.centerXAnchor.constraint(
+            equalTo: containerView.centerXAnchor
+        ).isActive = true
+        nameOfRoomTextField.topAnchor.constraint(
+            equalTo: descriptionForTextField.bottomAnchor,
+            constant: 5
+        ).isActive = true
+        nameOfRoomTextField.leadingAnchor.constraint(
+            equalTo: containerView.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        nameOfRoomTextField.trailingAnchor.constraint(
+            equalTo: containerView.trailingAnchor,
+            constant: -16
+        ).isActive = true
+        
+        buttonOkModalScreen.centerXAnchor.constraint(
+            equalTo: containerView.centerXAnchor
+        ).isActive = true
+        buttonOkModalScreen.topAnchor.constraint(
+            equalTo: nameOfRoomTextField.bottomAnchor,
+            constant: 20
+        ).isActive = true
+        buttonOkModalScreen.widthAnchor.constraint(
+            equalToConstant: 100
+        ).isActive = true
+        buttonOkModalScreen.heightAnchor.constraint(
+            equalToConstant: 45
+        ).isActive = true
+        
+        closeButton.topAnchor.constraint(
+            equalTo: containerView.topAnchor,
+            constant: 15
+        ).isActive = true
+        closeButton.trailingAnchor.constraint(
+            equalTo: containerView.trailingAnchor,
+            constant: -15
+        ).isActive = true
+        closeButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
+        closeButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        okPressed()
         return true
     }
     
@@ -161,7 +220,9 @@ final class ModalScreenViewController: UIViewController, UITextFieldDelegate {
         let bed = makeIconButton(title: "🛏️")
         let wardrobe = makeIconButton(title: "👕")
         
-        let stack = UIStackView(arrangedSubviews: [kitchen, bathroom, bed, wardrobe])
+        let stack = UIStackView(arrangedSubviews: [
+            kitchen, bathroom, bed, wardrobe
+        ])
         stack.axis = .horizontal
         stack.spacing = 8
         stack.distribution = .fillEqually
@@ -170,7 +231,11 @@ final class ModalScreenViewController: UIViewController, UITextFieldDelegate {
         
         // обработка нажатий для всех кнопок
         for button in stack.arrangedSubviews.compactMap({ $0 as? UIButton }) {
-            button.addTarget(self, action: #selector(iconTapped(_:)), for: .touchUpInside)
+            button.addTarget(
+                self,
+                action: #selector(iconTapped(_:)),
+                for: .touchUpInside
+            )
         }
         
         return stack
@@ -178,23 +243,29 @@ final class ModalScreenViewController: UIViewController, UITextFieldDelegate {
     
     @objc
     private func iconTapped(_ sender: UIButton) {
-        for button in iconsButtonsStackView.arrangedSubviews.compactMap({ $0 as? UIButton }) {
-                button.backgroundColor = .systemGray6
-            }
-            sender.backgroundColor = .lightGray
-            selectedIcon = sender.currentTitle
+        for button in iconsButtonsStackView.arrangedSubviews.compactMap({
+            $0 as? UIButton
+        }) {
+            button.backgroundColor = .systemGray6
+        }
+        sender.backgroundColor = .lightGray
+        selectedIcon = sender.currentTitle
     }
     
     @objc
-    private func closePressed() {           
-            dismiss(animated: true, completion: nil)
-        }
+    private func closePressed() {
+        dismiss(animated: true, completion: nil)
+    }
     
     @objc
     private func okPressed() {
-        let roomName = nameTextField.text ?? ""
+        let roomName = nameOfRoomTextField.text ?? ""
         let roomIcon = selectedIcon ?? ""
-        delegate?.modalScreenViewController(self, didEnterName: roomName, icon: roomIcon)
+        delegate?.modalScreenViewController(
+            self,
+            didEnterName: roomName,
+            icon: roomIcon
+        )
         print("Введено: \(roomName), Выбрана иконка: \(roomIcon)")
         dismiss(animated: true, completion: nil)
     }
