@@ -153,7 +153,11 @@ final class HomeViewController: UIViewController {
     }
 
     @objc private func didTapAddRoomButton() {
-        print("Add room button tapped!")
+        let modalVC = ModalScreenViewController()
+        modalVC.modalPresentationStyle = .overFullScreen
+        modalVC.modalTransitionStyle = .crossDissolve
+        modalVC.delegate = self
+        present(modalVC, animated: true, completion: nil)
     }
 }
 
@@ -163,7 +167,9 @@ extension HomeViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RoomCell", for: indexPath) as! RoomTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "RoomCell", for: indexPath) as? RoomTableViewCell else {
+                fatalError("Unable to dequeue RoomTableViewCell")
+        }
         let room = rooms[indexPath.row]
         cell.configure(with: room)
         return cell
@@ -176,5 +182,16 @@ extension HomeViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let room = rooms[indexPath.row]
         handleRoomSelection(room)
+    }
+}
+
+// MARK: - ModalScreenViewControllerDelegate
+extension HomeViewController: ModalScreenViewControllerDelegate {
+    func modalScreenViewController(_ controller: ModalScreenViewController, didEnterName name: String, icon: String) {
+        print("the modal window is closed")
+    }
+
+    func modalViewContollerDidClose(_ controller: ModalScreenViewController) {
+        print("the modal window is closed")
     }
 }
