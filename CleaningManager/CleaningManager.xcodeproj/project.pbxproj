@@ -68,6 +68,7 @@
 				503EF5FA2E523DD100BC97D2 /* Sources */,
 				503EF5FB2E523DD100BC97D2 /* Frameworks */,
 				503EF5FC2E523DD100BC97D2 /* Resources */,
+				503EF63F2E58BB2F00BC97D2 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -107,6 +108,9 @@
 			);
 			mainGroup = 503EF5F52E523DD100BC97D2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				503EF63E2E58B92500BC97D2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 503EF5FF2E523DD100BC97D2 /* Products */;
 			projectDirPath = "";
@@ -127,6 +131,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		503EF63F2E58BB2F00BC97D2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SWIFT_PACKAGE_DIR=\"${BUILD_DIR%Build/*}SourcePackages/artifacts\"\nSWIFTLINT_CMD=$(ls \"$SWIFT_PACKAGE_DIR\"/swiftlintplugins/SwiftLintBinary/SwiftLintBinary.artifactbundle/swiftlint-*-macos/bin/swiftlint | head -n 1)\n\nif test -f \"$SWIFTLINT_CMD\" 2>&1\nthen\n    \"$SWIFTLINT_CMD\"\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		503EF5FA2E523DD100BC97D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -146,6 +171,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UJH682UW96;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CleaningManager/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = CleanManager;
@@ -175,6 +201,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UJH682UW96;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CleaningManager/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = CleanManager;
@@ -339,6 +366,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		503EF63E2E58B92500BC97D2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.59.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 503EF5F62E523DD100BC97D2 /* Project object */;
 }
