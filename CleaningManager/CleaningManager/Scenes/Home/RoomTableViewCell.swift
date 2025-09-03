@@ -68,6 +68,7 @@ class RoomTableViewCell: UITableViewCell {
         setupConstraints()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -139,6 +140,9 @@ class RoomTableViewCell: UITableViewCell {
     @objc
     private func didTapGoButton() {
         UIView.animate(withDuration: 0.3) {
+//            let room = RoomViewController()
+//            let nav = UINavigationController(rootViewController: HomeViewController())
+//            HomeViewController().present(nav, animated: true)
             print("Go button tapped!")
         }
     }

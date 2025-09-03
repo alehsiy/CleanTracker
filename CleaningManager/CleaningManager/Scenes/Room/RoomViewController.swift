@@ -20,15 +20,36 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
             return model.items.count
         }
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        Section.allCases.count
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         if indexPath.section == Section.header.rawValue {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RoomImageTopCell.reuseIdentifier, for: indexPath) as! RoomImageTopCell
-            cell.configure(roomName: "RoomName", subtitle: "String", image: UIImage(systemName: "drop")!)
+            // swiftlint:disable force_cast
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: RoomImageTopCell.reuseIdentifier,
+                for: indexPath
+            ) as! RoomImageTopCell
+            // swiftlint:enable force_cast
+            cell.configure(
+                roomName: model.name,
+                subtitle: "Cleaning items in this room",
+                image: model.emojiIcon.asImage()
+            )
             return cell
         } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RoomItemCell.reuseIdentifier, for: indexPath) as! RoomItemCell
-//            cell.configure()
+            // swiftlint:disable force_cast
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: RoomItemCell.reuseIdentifier,
+                for: indexPath
+            ) as! RoomItemCell
+            // swiftlint:enable force_cast
+//            cell.configure(icon: <#String#>, title: <#String#>, percent: <#String#>, date: <#String#>, state: <#String#>, cleanCount: <#Int#>, cleaningFrequency: <#String#>, nextDate: <#String#>)
             return cell
         }
     }
@@ -39,26 +60,53 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = UIColor(white: 0.97, alpha: 1)
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
-        collectionView.register(RoomImageTopCell.self, forCellWithReuseIdentifier: RoomImageTopCell.reuseIdentifier)
-    }
+        collectionView.register(
+            RoomImageTopCell.self,
+            forCellWithReuseIdentifier: RoomImageTopCell.reuseIdentifier
+        )
+        collectionView.register(
+            RoomItemCell.self,
+            forCellWithReuseIdentifier: RoomItemCell.reuseIdentifier
+        )
+        view.addSubview(collectionView)
 
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+}
+
+// MARK: - Private Methods
+
+private extension RoomViewController {
     func makeLayout() -> UICollectionViewCompositionalLayout {
-        return UICollectionViewCompositionalLayout { sectionIndex, env in
+        return UICollectionViewCompositionalLayout { sectionIndex, _ in
             if sectionIndex == 0 {
-                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(120))
+                let itemSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .absolute(120)
+                )
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 let groupSize = itemSize
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16)
                 return section
             } else {
-                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(105))
+                let itemSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .absolute(105)
+                )
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
                 let groupSize = itemSize
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
@@ -68,46 +116,3 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
         }
     }
 }
-
-fileprivate struct RoomItem {
-    let cleanlinessStatus: String
-    let icon: RoomIcon
-    let lastCleaningDate: Date
-    let cleaningFrequency: CleaningFrequency
-    let state: CleaningState
-}
-
-fileprivate struct RoomModel {
-    let name: String
-    let image: UIImage?
-    let items: [RoomItem]
-    let totalCleanlinessStatus: Int
-}
-
-enum CleaningFrequency {
-    case daily
-    case weekly
-    case monthly
-}
-
-enum RoomIcon: String {
-    case dishes = "🍽️"
-}
-
-enum CleaningState {
-  case cleanRequired
-  case inProgress
-  case done
-}
-
-fileprivate let model = RoomModel(
-    name: "Kitchen",
-    image: nil,
-    items: [RoomItem(
-        cleanlinessStatus: "0% clean",
-        icon: .dishes,
-        lastCleaningDate: Calendar.current.startOfDay(for: Date()),
-        cleaningFrequency: .daily,
-        state: .cleanRequired)
-    ],
-    totalCleanlinessStatus: 21)
