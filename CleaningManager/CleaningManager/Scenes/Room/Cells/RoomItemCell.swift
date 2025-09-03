@@ -14,8 +14,9 @@ final class RoomItemCell: UICollectionViewCell {
     private let percentLabel = UILabel()
     private let lastDateLabel = UILabel()
     private let infoLabel = UILabel()
-    private let daysLabel = UILabel()
-    private let actionButton = UIButton()
+    private let actionButton = UIButton(type: .system)
+    private let infoView = UIView()
+    private let stackView = UIStackView()
 
     static let reuseIdentifier = String(describing: RoomItemCell.self)
 
@@ -25,10 +26,11 @@ final class RoomItemCell: UICollectionViewCell {
         addSubviews()
         setupLayout()
     }
+
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("Not implemented")
     }
-
 }
 
 extension RoomItemCell {
@@ -38,7 +40,7 @@ extension RoomItemCell {
         percent: String,
         date: String,
         state: String,
-        cleanCount: Int,
+        cleanCount: String,
         cleaningFrequency: String,
         nextDate: String
     ) {
@@ -50,7 +52,7 @@ extension RoomItemCell {
         nameLabel.text = title
         percentLabel.text = "\(percent) clean"
         lastDateLabel.text = "date"
-
+        actionButton.titleLabel?.text = "Action"
         infoLabel.text = "\(String(describing: cleanCount)) ・ \(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
     }
 }
@@ -58,22 +60,31 @@ extension RoomItemCell {
 private extension RoomItemCell {
     func addSubviews() {
         contentView.addSubview(iconView)
-        contentView.addSubview(nameLabel)
-        contentView.addSubview(percentLabel)
-        contentView.addSubview(daysLabel)
         contentView.addSubview(actionButton)
-        contentView.addSubview(infoLabel)
-        contentView.addSubview(progressView)
+        contentView.addSubview(stackView)
+        infoView.addSubview(percentLabel)
+        infoView.addSubview(lastDateLabel)
+        infoView.addSubview(progressView)
+        stackView.addArrangedSubview(nameLabel)
+        stackView.addArrangedSubview(infoView)
+        stackView.addArrangedSubview(infoLabel)
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.spacing = 25
+        stackView.alignment = .leading
     }
 
     func setupLayout() {
         iconView.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        infoView.translatesAutoresizingMaskIntoConstraints = false
         percentLabel.translatesAutoresizingMaskIntoConstraints = false
-        daysLabel.translatesAutoresizingMaskIntoConstraints = false
+        progressView.translatesAutoresizingMaskIntoConstraints = false
         actionButton.translatesAutoresizingMaskIntoConstraints = false
+        lastDateLabel.translatesAutoresizingMaskIntoConstraints = false
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
         progressView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
 
         layer.cornerRadius = 16
         clipsToBounds = true
@@ -88,7 +99,7 @@ private extension RoomItemCell {
 
         nameLabel.font = .boldSystemFont(ofSize: 17)
         percentLabel.font = .systemFont(ofSize: 13)
-        daysLabel.font = .systemFont(ofSize: 13)
+        lastDateLabel.font = .systemFont(ofSize: 13)
         actionButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .bold)
         infoLabel.font = .systemFont(ofSize: 13)
         infoLabel.font = .systemFont(ofSize: 13)
@@ -96,40 +107,58 @@ private extension RoomItemCell {
         // MARK: Colors
 
         percentLabel.textColor = .gray
-        daysLabel.textColor = .gray
+        lastDateLabel.textColor = .gray
         infoLabel.textColor = .gray
+        actionButton.titleLabel?.textColor = .white
+        actionButton.backgroundColor = .systemBlue
 
         // MARK: Constraints
 
         NSLayoutConstraint.activate([
             iconView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            iconView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            iconView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             iconView.widthAnchor.constraint(equalToConstant: 32),
             iconView.heightAnchor.constraint(equalToConstant: 32),
 
-            nameLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
-            nameLabel.topAnchor.constraint(equalTo: iconView.topAnchor),
+            percentLabel.leadingAnchor.constraint(equalTo: infoView.leadingAnchor),
+            percentLabel.bottomAnchor.constraint(equalTo: progressView.topAnchor),
+            lastDateLabel.trailingAnchor.constraint(equalTo: infoView.trailingAnchor),
+            lastDateLabel.bottomAnchor.constraint(equalTo: progressView.topAnchor),
+            progressView.widthAnchor.constraint(equalTo: infoView.widthAnchor),
+            progressView.heightAnchor.constraint(equalToConstant: 4),
+            progressView.bottomAnchor.constraint(equalTo: infoView.bottomAnchor),
+            progressView.centerXAnchor.constraint(equalTo: infoView.centerXAnchor),
+            infoView.widthAnchor.constraint(equalTo: stackView.widthAnchor),
 
-            percentLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
-            percentLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
+            stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            stackView.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
+            stackView.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -12),
+            stackView.topAnchor.constraint(lessThanOrEqualTo: contentView.topAnchor, constant: 25),
+            stackView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -25),
 
-            daysLabel.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -8),
-            daysLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+//            nameLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
+//            nameLabel.topAnchor.constraint(equalTo: iconView.topAnchor),
+//
+//            percentLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
+//            percentLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
+//
+//            daysLabel.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -8),
+//            daysLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
 
             actionButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            actionButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            actionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             actionButton.widthAnchor.constraint(equalToConstant: 65),
             actionButton.heightAnchor.constraint(equalToConstant: 32),
 
-            progressView.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            progressView.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -8),
-            progressView.topAnchor.constraint(equalTo: percentLabel.bottomAnchor, constant: 12),
-            progressView.heightAnchor.constraint(equalToConstant: 6),
+//            progressView.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+//            progressView.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -8),
+//            progressView.topAnchor.constraint(equalTo: percentLabel.bottomAnchor, constant: 12),
+//            progressView.heightAnchor.constraint(equalToConstant: 6),
 
-            infoLabel.leadingAnchor.constraint(equalTo: iconView.leadingAnchor),
-            infoLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            infoLabel.topAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 12),
-            infoLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+//            infoLabel.leadingAnchor.constraint(equalTo: iconView.leadingAnchor),
+//            infoLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+//            infoLabel.topAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 12),
+//            infoLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
 }

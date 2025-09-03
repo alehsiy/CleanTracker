@@ -13,6 +13,38 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
         case zone
     }
 
+    var dataSource: UICollectionViewDiffableDataSource<Int, Int>! = nil
+
+    var collectionView: UICollectionView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor(white: 0.97, alpha: 1)
+
+        setupNavigationBar()
+
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
+        collectionView.dataSource = self
+        collectionView.backgroundColor = .clear
+        collectionView.register(
+            RoomHeaderCell.self,
+            forCellWithReuseIdentifier: RoomHeaderCell.reuseIdentifier
+        )
+        collectionView.register(
+            RoomItemCell.self,
+            forCellWithReuseIdentifier: RoomItemCell.reuseIdentifier
+        )
+        view.addSubview(collectionView)
+
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == Section.header.rawValue {
             return 1
@@ -32,9 +64,9 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
         if indexPath.section == Section.header.rawValue {
             // swiftlint:disable force_cast
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: RoomImageTopCell.reuseIdentifier,
+                withReuseIdentifier: RoomHeaderCell.reuseIdentifier,
                 for: indexPath
-            ) as! RoomImageTopCell
+            ) as! RoomHeaderCell
             // swiftlint:enable force_cast
             cell.configure(
                 roomName: model.name,
@@ -49,38 +81,18 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
                 for: indexPath
             ) as! RoomItemCell
             // swiftlint:enable force_cast
-//            cell.configure(icon: <#String#>, title: <#String#>, percent: <#String#>, date: <#String#>, state: <#String#>, cleanCount: <#Int#>, cleaningFrequency: <#String#>, nextDate: <#String#>)
+            cell.configure(
+                icon: model.items[indexPath.item].icon,
+                title: model.items[indexPath.item].title,
+                percent: model.items[indexPath.item].cleanlinessPercent,
+                date: model.items[indexPath.item].lastCleaningDate,
+                state: model.items[indexPath.item].state.title,
+                cleanCount: model.items[indexPath.item].cleanCount,
+                cleaningFrequency: model.items[indexPath.item].cleaningFrequency.title,
+                nextDate: model.items[indexPath.item].nextDate
+            )
             return cell
         }
-    }
-    
-    var dataSource: UICollectionViewDiffableDataSource<Int, Int>! = nil
-
-    var collectionView: UICollectionView!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = UIColor(white: 0.97, alpha: 1)
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
-        collectionView.dataSource = self
-        collectionView.backgroundColor = .clear
-        collectionView.register(
-            RoomImageTopCell.self,
-            forCellWithReuseIdentifier: RoomImageTopCell.reuseIdentifier
-        )
-        collectionView.register(
-            RoomItemCell.self,
-            forCellWithReuseIdentifier: RoomItemCell.reuseIdentifier
-        )
-        view.addSubview(collectionView)
-
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
     }
 }
 
@@ -103,7 +115,7 @@ private extension RoomViewController {
             } else {
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(105)
+                    heightDimension: .absolute(160)
                 )
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
@@ -114,5 +126,22 @@ private extension RoomViewController {
                 return section
             }
         }
+    }
+
+    private func setupNavigationBar() {
+        self.title = "Cleaning Room"
+
+        let settingsButton = UIBarButtonItem(
+            image: UIImage(systemName: "gear"),
+            style: .plain,
+            target: self,
+            action: #selector(settingsButtonTapped)
+        )
+        navigationItem.rightBarButtonItem = settingsButton
+    }
+
+    @objc private func settingsButtonTapped() {
+        // Handle Settings button tap
+        print("Settings button tapped")
     }
 }

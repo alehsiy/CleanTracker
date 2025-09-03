@@ -1,5 +1,5 @@
 //
-//  RoomImageTopCell.swift
+//  RoomHeaderCell.swift
 //  CleaningManager
 //
 //  Created by Кирилл Привалов on 25.08.2025.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class RoomImageTopCell: UICollectionViewCell {
+final class RoomHeaderCell: UICollectionViewCell {
     private let iconImageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
@@ -15,7 +15,7 @@ final class RoomImageTopCell: UICollectionViewCell {
 
     // TODO: Добавить UIImageView по макету
 
-    static let reuseIdentifier = String(describing: RoomImageTopCell.self)
+    static let reuseIdentifier = String(describing: RoomHeaderCell.self)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -43,7 +43,7 @@ final class RoomImageTopCell: UICollectionViewCell {
 
 // MARK: - Private Methods
 
-private extension RoomImageTopCell {
+private extension RoomHeaderCell {
     func setupLayout() {
         backgroundColor = .white
         layer.cornerRadius = 16
