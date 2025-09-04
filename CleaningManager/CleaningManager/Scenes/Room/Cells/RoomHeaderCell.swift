@@ -11,6 +11,7 @@ final class RoomHeaderCell: UICollectionViewCell {
     private let iconImageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
+    private let progressInfoLabel = UILabel()
     private let labelsView = UIStackView()
 
     // TODO: Добавить UIImageView по макету
@@ -23,9 +24,10 @@ final class RoomHeaderCell: UICollectionViewCell {
         setupLayout()
     }
 
-    func configure(roomName: String, subtitle: String, image: UIImage?) {
+    func configure(roomName: String, subtitle: String, image: UIImage?, progress: String) {
         titleLabel.text = roomName
         subtitleLabel.text = subtitle
+        progressInfoLabel.text = progress
         if let image {
             iconImageView.image = image
         } else {
@@ -57,10 +59,16 @@ private extension RoomHeaderCell {
         iconImageView.contentMode = .scaleAspectFill
         iconImageView.contentMode = .scaleAspectFit
 
+        // TODO: Добавить картинку на фоне и плейсхолдер, если её нет
+
         titleLabel.font = UIFont.boldSystemFont(ofSize: 22)
 
         subtitleLabel.font = UIFont.systemFont(ofSize: 16)
         subtitleLabel.textColor = .gray
+
+        progressInfoLabel.font = UIFont.systemFont(ofSize: 16)
+        progressInfoLabel.textColor = .gray
+
 
         labelsView.axis = .vertical
         labelsView.alignment = .leading
@@ -82,6 +90,7 @@ private extension RoomHeaderCell {
         contentView.addSubview(iconImageView)
         labelsView.addArrangedSubview(titleLabel)
         labelsView.addArrangedSubview(subtitleLabel)
+        labelsView.addArrangedSubview(progressInfoLabel)
         contentView.addSubview(labelsView)
     }
 }

@@ -49,10 +49,13 @@ extension RoomItemCell {
         } else {
             iconView.image = UIImage(systemName: "questionmark")
         }
+        // TODO: Менять цвет в зависимости от состояния
         nameLabel.text = title
         percentLabel.text = "\(percent) clean"
         lastDateLabel.text = "date"
-        actionButton.titleLabel?.text = "Action"
+        actionButton.setTitle("Done", for: .normal)
+        actionButton.titleLabel?.textColor = .white
+        actionButton.tintColor = .white
         infoLabel.text = "\(String(describing: cleanCount)) ・ \(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
     }
 }
@@ -136,29 +139,10 @@ private extension RoomItemCell {
             stackView.topAnchor.constraint(lessThanOrEqualTo: contentView.topAnchor, constant: 25),
             stackView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -25),
 
-//            nameLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
-//            nameLabel.topAnchor.constraint(equalTo: iconView.topAnchor),
-//
-//            percentLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
-//            percentLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
-//
-//            daysLabel.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -8),
-//            daysLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-
             actionButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             actionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             actionButton.widthAnchor.constraint(equalToConstant: 65),
             actionButton.heightAnchor.constraint(equalToConstant: 32),
-
-//            progressView.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-//            progressView.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -8),
-//            progressView.topAnchor.constraint(equalTo: percentLabel.bottomAnchor, constant: 12),
-//            progressView.heightAnchor.constraint(equalToConstant: 6),
-
-//            infoLabel.leadingAnchor.constraint(equalTo: iconView.leadingAnchor),
-//            infoLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-//            infoLabel.topAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 12),
-//            infoLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
 }

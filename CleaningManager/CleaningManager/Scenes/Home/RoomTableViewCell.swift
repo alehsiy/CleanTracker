@@ -8,6 +8,8 @@ import UIKit
 
 class RoomTableViewCell: UITableViewCell {
 
+    var onTap: (() -> Void)?
+
     private let containerView = UIView()
 
     private let roomNameLabel: UILabel = {
@@ -139,10 +141,8 @@ class RoomTableViewCell: UITableViewCell {
 
     @objc
     private func didTapGoButton() {
-        UIView.animate(withDuration: 0.3) {
-//            let room = RoomViewController()
-//            let nav = UINavigationController(rootViewController: HomeViewController())
-//            HomeViewController().present(nav, animated: true)
+        UIView.animate(withDuration: 0.3) { [onTap] in
+            onTap?()
             print("Go button tapped!")
         }
     }

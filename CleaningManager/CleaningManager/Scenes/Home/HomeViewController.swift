@@ -172,6 +172,10 @@ extension HomeViewController: UITableViewDataSource {
         }
         let room = rooms[indexPath.row]
         cell.configure(with: room)
+        let roomViewController = RoomViewController()
+        cell.onTap = { [navigationController] in
+            navigationController?.pushViewController(roomViewController, animated: true)
+        }
         return cell
     }
 }

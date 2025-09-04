@@ -23,6 +23,8 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
 
         setupNavigationBar()
 
+        // TODO: Добавить PlaceholderView, если нет items
+
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -71,7 +73,8 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
             cell.configure(
                 roomName: model.name,
                 subtitle: "Cleaning items in this room",
-                image: model.emojiIcon.asImage()
+                image: model.emojiIcon.asImage(),
+                progress: "2/3 Clean  ・  48%"
             )
             return cell
         } else {
@@ -129,15 +132,14 @@ private extension RoomViewController {
     }
 
     private func setupNavigationBar() {
-        self.title = "Cleaning Room"
-
         let settingsButton = UIBarButtonItem(
-            image: UIImage(systemName: "gear"),
+            image: UIImage(systemName: "gearshape"),
             style: .plain,
             target: self,
             action: #selector(settingsButtonTapped)
         )
         navigationItem.rightBarButtonItem = settingsButton
+        navigationItem.title = model.name
     }
 
     @objc private func settingsButtonTapped() {
