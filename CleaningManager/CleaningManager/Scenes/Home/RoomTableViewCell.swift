@@ -8,6 +8,8 @@ import UIKit
 
 class RoomTableViewCell: UITableViewCell {
 
+    var onTap: (() -> Void)?
+
     private let containerView = UIView()
 
     private let roomNameLabel: UILabel = {
@@ -68,6 +70,7 @@ class RoomTableViewCell: UITableViewCell {
         setupConstraints()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -138,7 +141,8 @@ class RoomTableViewCell: UITableViewCell {
 
     @objc
     private func didTapGoButton() {
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.3) { [onTap] in
+            onTap?()
             print("Go button tapped!")
         }
     }
