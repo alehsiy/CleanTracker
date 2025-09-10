@@ -24,14 +24,7 @@ final class HomeViewController: UIViewController {
         return button
     }()
 
-    // MARK: - Mock Data
-    private var rooms: [Room] = [
-        Room(id: UUID(), name: "Kitchen", icon: "🍽️", completedTasks: 3, totalTasks: 5, needsAttention: true),
-        Room(id: UUID(), name: "Living room", icon: "🛋️", completedTasks: 0, totalTasks: 5, needsAttention: true),
-        Room(id: UUID(), name: "Guest room", icon: "🌇", completedTasks: 3, totalTasks: 5, needsAttention: true),
-        Room(id: UUID(), name: "Bedroom", icon: "🛌", completedTasks: 5, totalTasks: 5, needsAttention: false),
-        Room(id: UUID(), name: "Bathroom", icon: "🚿", completedTasks: 2, totalTasks: 4, needsAttention: true)
-    ]
+    private var rooms: [Room] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,6 +33,7 @@ final class HomeViewController: UIViewController {
         setup()
 
         view.backgroundColor = .white
+        updateEmptyState()
     }
 
     private func setup() {
@@ -47,6 +41,7 @@ final class HomeViewController: UIViewController {
         setupSectionTitle()
         setupAddRoomButton()
         setupTableView()
+        setupEmptyStateView()
     }
 
     private func setupNavigationBar() {
@@ -124,6 +119,47 @@ final class HomeViewController: UIViewController {
         tableView.showsVerticalScrollIndicator = true
     }
 
+    private func setupEmptyStateView() {
+        let backgroundView = UIView()
+        tableView.backgroundView = backgroundView
+
+        let label = UILabel()
+        label.text = "Let's begin your cleaning journey!\nAdd your first room to start"
+        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+        label.numberOfLines = 0
+
+        let imageView = UIImageView(image: UIImage(systemName: "arrowshape.down.circle"))
+        imageView.tintColor = .systemBlue
+        imageView.contentMode = .scaleAspectFit
+
+        backgroundView.addSubview(label)
+        backgroundView.addSubview(imageView)
+
+        backgroundView.frame = tableView.bounds
+        backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor, constant: -40),
+            label.widthAnchor.constraint(lessThanOrEqualToConstant: 300),
+
+            imageView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
+            imageView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            imageView.widthAnchor.constraint(equalToConstant: 50),
+            imageView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+
+    private func updateEmptyState() {
+        let isEmpty = rooms.isEmpty
+        tableView.backgroundView?.isHidden = !isEmpty
+    }
+
     private func setupAddRoomButton() {
         addRoomButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addRoomButton)
@@ -143,16 +179,18 @@ final class HomeViewController: UIViewController {
     }
 
     private func calculateTotalProgress() -> Float {
-        let totalTasks = rooms.reduce(0) { $0 + $1.totalTasks }
-        let completedTasks = rooms.reduce(0) { $0 + $1.completedTasks }
+        let totalTasks = rooms.reduce(into: 0) { $0 + $1.totalZones }
+        let completedTasks = rooms.reduce(0) { $0 + $1.completedZones }
         return totalTasks > 0 ? Float(completedTasks) / Float(totalTasks) : 0
     }
 
-    @objc private func didTapNotificationButton() {
+    @objc
+    private func didTapNotificationButton() {
         print("Notification button tapped!")
     }
 
-    @objc private func didTapAddRoomButton() {
+    @objc
+    private func didTapAddRoomButton() {
         let modalVC = ModalScreenViewController()
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
