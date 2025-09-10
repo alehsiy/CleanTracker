@@ -7,11 +7,21 @@
 
 import UIKit
 
+protocol RoomViewControllerDelegate: AnyObject {
+    func roomViewController(
+        _ controller: RoomViewController,
+        didEnterName name: String,
+        icon: String
+    )
+}
+
 final class RoomViewController: UIViewController, UICollectionViewDataSource {
     enum Section: Int, CaseIterable {
         case header
         case zone
     }
+    
+    weak var delegate: RoomViewControllerDelegate?
 
     var dataSource: UICollectionViewDiffableDataSource<Int, Int>! = nil
 

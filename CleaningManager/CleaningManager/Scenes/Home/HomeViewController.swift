@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController, RoomViewControllerDelegate {
 
     private let progressBar = ProgressBlock()
     private let sectionTitleLabel = UILabel()
@@ -184,6 +184,11 @@ final class HomeViewController: UIViewController {
         return totalTasks > 0 ? Float(completedTasks) / Float(totalTasks) : 0
     }
 
+    func roomViewController(_ controller: RoomViewController, didEnterName name: String, icon: String) {
+        print("Получили из RoomVC: \(name), \(icon)")
+        // todo прогресс из комнат
+    }
+    
     @objc
     private func didTapNotificationButton() {
         print("Notification button tapped!")
@@ -191,7 +196,7 @@ final class HomeViewController: UIViewController {
 
     @objc
     private func didTapAddRoomButton() {
-        let modalVC = ModalScreenViewController()
+        let modalVC = CleaningManager.AddRoomModalScreen()
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
         modalVC.delegate = self
@@ -228,12 +233,20 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 // MARK: - ModalScreenViewControllerDelegate
-extension HomeViewController: ModalScreenViewControllerDelegate {
-    func modalScreenViewController(_ controller: ModalScreenViewController, didEnterName name: String, icon: String) {
-        print("the modal window is closed")
-    }
-
-    func modalViewContollerDidClose(_ controller: ModalScreenViewController) {
-        print("the modal window is closed")
+extension HomeViewController: AddRoomModalScreenDelegate {
+    func AddRoomModalScreen(_ controller: AddRoomModalScreen, didEnterName name: String, icon: String) {
+        controller.dismiss(animated: true) { [weak self] in
+            guard let self = self else { return }
+            print("the modal window is closed")
+            let roomVC = CleaningManager.RoomViewController()
+            roomVC.modalPresentationStyle = .overFullScreen
+            roomVC.modalTransitionStyle = .crossDissolve
+            roomVC.delegate = self
+            self.present(roomVC, animated: true, completion: nil)
+        }
+        
+        func modalViewContollerDidClose(_ controller: AddRoomModalScreen) {
+            print("the modal window is closed")
+        }
     }
 }
