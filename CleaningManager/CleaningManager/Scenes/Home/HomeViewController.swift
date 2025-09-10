@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HomeViewController: UIViewController, RoomViewControllerDelegate {
+final class HomeViewController: UIViewController, roomViewControllerDelegate {
 
     private let progressBar = ProgressBlock()
     private let sectionTitleLabel = UILabel()

@@ -26,7 +26,7 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
     private let closeButton = UIButton()
     private let descriptionForIcons = UILabel()
     private let descriptionForTextField = UILabel()
-    private let buttonAddRoomModalScreen = UIButton()
+    private let addRoomButton = UIButton()
     private let nameOfRoomTextField = UITextField()
     
     // MARK: - Life cycle
@@ -37,8 +37,7 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         
         setupUI()
         setupLayout()
-        setupDescriptionsForElements()
-        setupIconsButtonsStack()
+        
     }
     
     // MARK: - Setup
@@ -84,17 +83,17 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         nameOfRoomTextField.borderStyle = .roundedRect
         nameOfRoomTextField.translatesAutoresizingMaskIntoConstraints = false
         
-        containerView.addSubview(buttonAddRoomModalScreen)
-        buttonAddRoomModalScreen.addTarget(
+        containerView.addSubview(addRoomButton)
+        addRoomButton.addTarget(
             self,
             action: #selector(addRoomButtonPressed),
             for: .touchUpInside
         )
-        buttonAddRoomModalScreen.setTitle("Add room", for: .normal)
-        buttonAddRoomModalScreen.setTitleColor(.white, for: .normal)
-        buttonAddRoomModalScreen.layer.cornerRadius = 16
-        buttonAddRoomModalScreen.backgroundColor = .systemBlue
-        buttonAddRoomModalScreen.translatesAutoresizingMaskIntoConstraints = false
+        addRoomButton.setTitle("Add room", for: .normal)
+        addRoomButton.setTitleColor(.white, for: .normal)
+        addRoomButton.layer.cornerRadius = 16
+        addRoomButton.backgroundColor = .systemBlue
+        addRoomButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupLayout() {
@@ -119,6 +118,8 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
             constant: 16
         ).isActive = true
         
+        setupDescriptionsForElements()
+        
         nameOfRoomTextField.centerXAnchor.constraint(
             equalTo: containerView.centerXAnchor
         ).isActive = true
@@ -135,17 +136,19 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
             constant: -16
         ).isActive = true
         
-        buttonAddRoomModalScreen.centerXAnchor.constraint(
+        setupIconsButtonsStack()
+        
+        addRoomButton.centerXAnchor.constraint(
             equalTo: containerView.centerXAnchor
         ).isActive = true
-        buttonAddRoomModalScreen.topAnchor.constraint(
+        addRoomButton.topAnchor.constraint(
             equalTo: nameOfRoomTextField.bottomAnchor,
             constant: 16
         ).isActive = true
-        buttonAddRoomModalScreen.widthAnchor.constraint(
+        addRoomButton.widthAnchor.constraint(
             equalToConstant: 268
         ).isActive = true
-        buttonAddRoomModalScreen.heightAnchor.constraint(
+        addRoomButton.heightAnchor.constraint(
             equalToConstant: 40
         ).isActive = true
         

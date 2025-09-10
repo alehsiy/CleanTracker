@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol RoomViewControllerDelegate: AnyObject {
+protocol roomViewControllerDelegate: AnyObject {
     func roomViewController(
         _ controller: RoomViewController,
         didEnterName name: String,
@@ -21,7 +21,7 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
         case zone
     }
     
-    weak var delegate: RoomViewControllerDelegate?
+    weak var delegate: roomViewControllerDelegate?
 
     var dataSource: UICollectionViewDiffableDataSource<Int, Int>! = nil
 
