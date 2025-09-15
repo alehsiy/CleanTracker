@@ -27,6 +27,17 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
 
     var collectionView: UICollectionView!
 
+    private let addItemButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Add item", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        button.tintColor = .label
+        button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        button.layer.cornerRadius = 16
+        button.layer.cornerCurve = .continuous
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(white: 0.97, alpha: 1)
@@ -55,6 +66,8 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+        setupAddItemButton()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -151,9 +164,32 @@ private extension RoomViewController {
         navigationItem.rightBarButtonItem = settingsButton
         navigationItem.title = model.name
     }
+    
+    private func setupAddItemButton() {
+        addItemButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(addItemButton)
+
+        NSLayoutConstraint.activate([
+            addItemButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            addItemButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            addItemButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            addItemButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+
+        addItemButton.addTarget(self, action: #selector(didTapAddItemButton), for: .touchUpInside)
+    }
 
     @objc private func settingsButtonTapped() {
         // Handle Settings button tap
         print("Settings button tapped")
+    }
+    
+    @objc
+    private func didTapAddItemButton() {
+        let modalVC = CleaningManager.AddItemModalScreen()
+        modalVC.modalPresentationStyle = .overFullScreen
+        modalVC.modalTransitionStyle = .crossDissolve
+        //modalVC.delegate = self
+        present(modalVC, animated: true, completion: nil)
     }
 }

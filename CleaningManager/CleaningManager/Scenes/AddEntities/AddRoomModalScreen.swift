@@ -37,7 +37,6 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         
         setupUI()
         setupLayout()
-        
     }
     
     // MARK: - Setup
@@ -229,10 +228,11 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         let kitchen = makeIconButton(title: "🍽️")
         let bathroom = makeIconButton(title: "🚿")
         let bed = makeIconButton(title: "🛏️")
-        let wardrobe = makeIconButton(title: "👕")
+        let wardrobe = makeIconButton(title: "🗄️")
+        let garden = makeIconButton(title: "🏡")
         
         let stack = UIStackView(arrangedSubviews: [
-            kitchen, bathroom, bed, wardrobe
+            kitchen, bathroom, bed, wardrobe, garden
         ])
         stack.axis = .horizontal
         stack.spacing = 8
@@ -280,6 +280,5 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         )
         dismiss(animated: true, completion: nil)
         print("Введено: \(roomName), Выбрана иконка: \(roomIcon)")
-      
     }
 }
