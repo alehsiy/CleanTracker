@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		19927AD12E7864700047E124 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 19927AD02E7864700047E124 /* Alamofire */; };
+		19927AD32E7864700047E124 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 19927AD22E7864700047E124 /* AlamofireDynamic */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		503EF5FE2E523DD100BC97D2 /* CleaningManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CleaningManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19927AD12E7864700047E124 /* Alamofire in Frameworks */,
+				19927AD32E7864700047E124 /* AlamofireDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +86,8 @@
 			);
 			name = CleaningManager;
 			packageProductDependencies = (
+				19927AD02E7864700047E124 /* Alamofire */,
+				19927AD22E7864700047E124 /* AlamofireDynamic */,
 			);
 			productName = CleaningManager;
 			productReference = 503EF5FE2E523DD100BC97D2 /* CleaningManager.app */;
@@ -110,6 +119,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				503EF63E2E58B92500BC97D2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 503EF5FF2E523DD100BC97D2 /* Products */;
@@ -368,6 +378,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
 		503EF63E2E58B92500BC97D2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
@@ -377,6 +395,19 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		19927AD02E7864700047E124 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		19927AD22E7864700047E124 /* AlamofireDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = AlamofireDynamic;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 503EF5F62E523DD100BC97D2 /* Project object */;
 }
