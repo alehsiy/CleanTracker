@@ -7,9 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		19927AD12E7864700047E124 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 19927AD02E7864700047E124 /* Alamofire */; };
-		19927AD32E7864700047E124 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 19927AD22E7864700047E124 /* AlamofireDynamic */; };
+		19927B0F2E786A3D0047E124 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 19927B0E2E786A3D0047E124 /* Alamofire */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		19927B0C2E7869090047E124 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		503EF5FE2E523DD100BC97D2 /* CleaningManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CleaningManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,8 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				19927AD12E7864700047E124 /* Alamofire in Frameworks */,
-				19927AD32E7864700047E124 /* AlamofireDynamic in Frameworks */,
+				19927B0F2E786A3D0047E124 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +87,7 @@
 				503EF5FB2E523DD100BC97D2 /* Frameworks */,
 				503EF5FC2E523DD100BC97D2 /* Resources */,
 				503EF63F2E58BB2F00BC97D2 /* ShellScript */,
+				19927B0C2E7869090047E124 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -86,8 +98,7 @@
 			);
 			name = CleaningManager;
 			packageProductDependencies = (
-				19927AD02E7864700047E124 /* Alamofire */,
-				19927AD22E7864700047E124 /* AlamofireDynamic */,
+				19927B0E2E786A3D0047E124 /* Alamofire */,
 			);
 			productName = CleaningManager;
 			productReference = 503EF5FE2E523DD100BC97D2 /* CleaningManager.app */;
@@ -119,7 +130,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				503EF63E2E58B92500BC97D2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
-				19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				19927B0D2E786A3D0047E124 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 503EF5FF2E523DD100BC97D2 /* Products */;
@@ -378,7 +389,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+		19927B0D2E786A3D0047E124 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
@@ -397,15 +408,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		19927AD02E7864700047E124 /* Alamofire */ = {
+		19927B0E2E786A3D0047E124 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			package = 19927B0D2E786A3D0047E124 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		19927AD22E7864700047E124 /* AlamofireDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 19927ACF2E7864700047E124 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = AlamofireDynamic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
