@@ -23,8 +23,10 @@ actor NetworkManager {
     ) {
         self.decoder = decoder
         self.encoder = encoder
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         encoder.keyEncodingStrategy = .convertToSnakeCase
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
     }
 
     func request(

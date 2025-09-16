@@ -9,6 +9,9 @@ import UIKit
 
 final class HomeViewController: UIViewController, roomViewControllerDelegate {
 
+    private var rooms: [Room] = []
+    private var isLoading = false
+    private let roomService = RoomService.shared
     private let progressBar = ProgressBlock()
     private let sectionTitleLabel = UILabel()
     private let tableView = UITableView()
@@ -24,8 +27,6 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
         return button
     }()
 
-    private var rooms: [Room] = []
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -33,6 +34,8 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
         setup()
 
         view.backgroundColor = .white
+
+        loadRooms()
         updateEmptyState()
     }
 
@@ -42,6 +45,48 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
         setupAddRoomButton()
         setupTableView()
         setupEmptyStateView()
+    }
+
+    private func loadRooms() {
+        Task {
+            do {
+                let rooms = try await roomService.fetchAllRooms()
+
+                await MainActor.run {
+                    self.rooms = rooms
+                    self.tableView.reloadData()
+                    self.updateEmptyState()
+                }
+            } catch {
+                await MainActor.run {
+                    self.handleError(error)
+                }
+            }
+        }
+    }
+
+    private func handleError(_ error: Error) {
+        if let roomError = error as? RoomServiceError {
+            switch roomError {
+            case .networkError(let underlyingError):
+                showError(message: "Network error: \(underlyingError.localizedDescription)")
+            case .decodingError:
+                showError(message: "Failed to parse server response")
+            case .unknown:
+                showError(message: "Unknown error occurred")
+            }
+        } else {
+            showError(message: error.localizedDescription)
+        }
+    }
+
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in
+            self.loadRooms()
+        })
+        present(alert, animated: true)
     }
 
     private func setupNavigationBar() {
@@ -179,8 +224,8 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
     }
 
     private func calculateTotalProgress() -> Float {
-        let totalTasks = rooms.reduce(into: 0) { $0 + $1.totalZones }
-        let completedTasks = rooms.reduce(0) { $0 + $1.completedZones }
+        let totalTasks = rooms.reduce(into: 0) { $0 + ($1.totalZones ?? 0) }
+        let completedTasks = rooms.reduce(0) { $0 + ($1.completedZones ?? 0) }
         return totalTasks > 0 ? Float(completedTasks) / Float(totalTasks) : 0
     }
 

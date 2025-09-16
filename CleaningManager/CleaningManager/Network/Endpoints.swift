@@ -19,7 +19,7 @@ final class URLBuilder {
 
         var path: String {
             switch self {
-            case .rooms(path: let path): "rooms/\(path.path)"
+            case .rooms(path: let path): "\(path.path)"
             case .zones(path: let path): "zones/\(path.path)"
             case .stats(path: let path): "rooms/"
             }

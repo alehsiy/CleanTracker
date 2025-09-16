@@ -14,18 +14,18 @@ struct Room: Codable, Identifiable {
     let id: String
     let name: String
     let icon: String
-    let completedZones: Int
-    let totalZones: Int
+    let completedZones: Int?
+    let totalZones: Int?
     let createdAt: Date
     let deletedAt: Date?
     let updatedAt: Date
 
     var progress: Float {
-        return totalZones > 0 ? Float(completedZones) / Float(totalZones) : 0
+        return Float(completedZones ?? 0) / Float(totalZones ?? 0)
     }
 
     var progressText: String {
-        return "\(completedZones)/\(totalZones) tasks done"
+        return "\(completedZones ?? 0)/\(totalZones ?? 0) tasks done"
     }
 
     var statusText: String? {
@@ -33,7 +33,7 @@ struct Room: Codable, Identifiable {
     }
 
     var needsAttention: Bool {
-        return progress < 0.9
+        return progress < 1.0
     }
 
     enum CodingKeys: String, CodingKey {
@@ -44,14 +44,4 @@ struct Room: Codable, Identifiable {
         case totalZones = "zones_total"
         case completedZones = "zones_cleaned_count"
     }
-}
-
-struct NewRoom: Codable {
-    let name: String
-    let icon: String?
-}
-
-struct UpdateRoom: Codable {
-    let name: String?
-    let icon: String?
 }
