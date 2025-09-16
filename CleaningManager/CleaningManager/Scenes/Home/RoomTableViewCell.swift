@@ -128,7 +128,7 @@ class RoomTableViewCell: UITableViewCell {
 
     func configure(with room: Room) {
         roomNameLabel.text = room.name
-        iconLabel.text = room.icon
+        iconLabel.text = room.icon ?? "🏠"
         progressLabel.text = room.progressText
 
         if room.needsAttention {
