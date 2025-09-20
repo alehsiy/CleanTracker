@@ -71,6 +71,7 @@ final class EntitySettingsModalScreen: UIViewController {
         
         containerView.addSubview(tableWithRoomItems)
         tableWithRoomItems.translatesAutoresizingMaskIntoConstraints = false
+        tableWithRoomItems.separatorColor = .clear
 
         containerView.addSubview(confirmChangesButton)
         confirmChangesButton.addTarget(
@@ -141,6 +142,7 @@ final class EntitySettingsModalScreen: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 32)
+        button.addTarget(self, action: #selector(iconTapped(_:)), for: .touchUpInside)
         button.layer.cornerRadius = 8
         button.backgroundColor = .systemGray6
         button.widthAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
@@ -162,15 +164,6 @@ final class EntitySettingsModalScreen: UIViewController {
         stack.distribution = .fill
         stack.isLayoutMarginsRelativeArrangement = false
         stack.translatesAutoresizingMaskIntoConstraints = false
-        
-        // обработка нажатий для всех кнопок
-        for button in stack.arrangedSubviews.compactMap({ $0 as? UIButton }) {
-            button.addTarget(
-                self,
-                action: #selector(iconTapped(_:)),
-                for: .touchUpInside
-            )
-        }
         
         return stack
     }()
@@ -196,9 +189,7 @@ extension EntitySettingsModalScreen: UITableViewDataSource {
         }
         let item = items[indexPath.row]
         cell.configure(with: item.title)
-        cell.selectionStyle = .none
-        tableView.separatorColor = .clear
-
+        
         return cell
     }
 }
@@ -209,15 +200,28 @@ extension EntitySettingsModalScreen: UITableViewDelegate {
         let selectedItemTitle = selectedItem.title
         let alert = UIAlertController(
             title: "Confirm delete \(selectedItemTitle)",
-            message: "Are you shure?",
+            message: "Are you sure?",
             preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(
-            title: "No",
-            style: .cancel,
-            handler: { _ in print("user tap NO")}))
+        alert.addAction(
+            UIAlertAction(
+                title: "No",
+                style: .cancel,
+                handler: { _ in
+                    print("user tap NO")
+                }
+            )
+        )
         
-        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { _ in print("user tap Yes")}))
+        alert.addAction(
+            UIAlertAction(
+                title: "Yes",
+                style: .default,
+                handler: { _ in
+                    print("user tap Yes")
+                }
+            )
+        )
         
         present(alert, animated: true, completion: nil)
     }
