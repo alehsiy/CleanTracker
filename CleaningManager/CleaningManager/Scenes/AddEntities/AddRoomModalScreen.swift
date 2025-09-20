@@ -278,7 +278,6 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
             didEnterName: roomName,
             icon: roomIcon
         )
-        dismiss(animated: true, completion: nil)
         print("Введено: \(roomName), Выбрана иконка: \(roomIcon)")
     }
 }
