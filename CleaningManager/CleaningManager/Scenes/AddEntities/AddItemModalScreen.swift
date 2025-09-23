@@ -16,7 +16,7 @@ protocol AddItemModalScreenDelegate: AnyObject {
     )
 }
 
-final class AddItemModalScreen: UIViewController, UITextFieldDelegate  {
+final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
     
     weak var delegate: AddItemModalScreenDelegate?
     var selectedIcon: String?
