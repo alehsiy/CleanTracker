@@ -8,13 +8,21 @@
 import Alamofire
 import Foundation
 
-final class RoomPresenter {
-    func getZoneInfo() async throws -> Data? {
-        var data = try await NetworkManager.shared.request(
-            url: URLBuilder.shared.create(for: .zones(.byid(id: "19ff716d-02e6-4824-8709-85d94a54835b"))),
-            method: .get
-        )
-        
-        return data
-    }
-}
+//final class RoomPresenter {
+//    func fetchAllZones(roomId id: String) -> [ZoneItem] {
+//        let data = try await NetworkManager.shared.request(
+//            url: URLBuilder.shared.create(
+//                for: .zones(.byid(id: id)),
+//                method: .get
+//            )
+//    }
+//
+//    func getZoneInfo(_ id: String) async throws -> Data? {
+//        let data = try await NetworkManager.shared.request(
+//            url: URLBuilder.shared.create(for: .zones(.byid(id: id))),
+//            method: .get
+//        )
+//        
+//        return data
+//    }
+//}

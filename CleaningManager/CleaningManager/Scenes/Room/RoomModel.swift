@@ -7,6 +7,18 @@
 
 import Foundation
 
+//final class RoomModel {
+//    var name: String
+//    var icon: String
+//
+//    var items: [RoomItem]
+//
+//    struct RoomItem {
+//        let name: String
+//        let icon: String
+//    }
+//}
+
 let model = RoomModel(
     name: "Bathroom",
     emojiIcon: "🚿",

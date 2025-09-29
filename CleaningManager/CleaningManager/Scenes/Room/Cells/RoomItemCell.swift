@@ -37,26 +37,22 @@ extension RoomItemCell {
     func configure(
         icon: String,
         title: String,
-        percent: String,
-        date: String,
-        state: String,
-        cleanCount: String,
+        date: Date?,
         cleaningFrequency: String,
-        nextDate: String
+        nextDate: Date?
     ) {
         if let image = icon.asImage() {
             iconView.image = image
         } else {
             iconView.image = UIImage(systemName: "questionmark")
         }
-        // TODO: Менять цвет в зависимости от состояния
         nameLabel.text = title
-        percentLabel.text = "\(percent) clean"
+        percentLabel.text = "% clean"
         lastDateLabel.text = "date"
         actionButton.setTitle("Done", for: .normal)
         actionButton.titleLabel?.textColor = .white
         actionButton.tintColor = .white
-        infoLabel.text = "\(String(describing: cleanCount)) ・ \(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
+        infoLabel.text = "3 cleans ・ \(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
     }
 }
 

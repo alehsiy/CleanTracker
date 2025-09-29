@@ -6,10 +6,6 @@
 //
 import Foundation
 
-//struct ZoneResponse: Codable {
-//    let zones: [Zone]
-//}
-
 struct Zone: Codable, Identifiable {
     let id: String
     let roomId: String

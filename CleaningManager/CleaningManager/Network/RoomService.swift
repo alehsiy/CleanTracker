@@ -116,6 +116,24 @@ actor RoomService {
             throw RoomServiceError.networkError(error)
         }
     }
+
+    func getRoomZones(id: String) async throws -> [Zone] {
+        let url = URLBuilder.shared.create(for: .rooms(.roomZones(id: id)))
+
+        do {
+            let data = try await NetworkManager.shared.request(url: url, method: .get)
+            guard let data = data else {
+                throw RoomServiceError.unknown
+            }
+            let zones = try await NetworkManager.shared.parseJSON(with: [Zone].self, data: data)
+            guard let zones = zones else {
+                throw RoomServiceError.decodingError
+            }
+            return zones
+        } catch {
+            throw RoomServiceError.networkError(error)
+        }
+    }
 }
 
 struct NewRoom: Codable {

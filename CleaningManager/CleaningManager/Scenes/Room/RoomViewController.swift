@@ -16,11 +16,14 @@ protocol roomViewControllerDelegate: AnyObject {
 }
 
 final class RoomViewController: UIViewController, UICollectionViewDataSource {
+    var room: Room?
+    private var zones: [Zone] = []
+
     enum Section: Int, CaseIterable {
         case header
         case zone
     }
-    
+
     weak var delegate: roomViewControllerDelegate?
 
     var dataSource: UICollectionViewDiffableDataSource<Int, Int>! = nil
@@ -37,15 +40,42 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
         button.layer.cornerCurve = .continuous
         return button
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        showItems(roomId: room!.id)
         view.backgroundColor = UIColor(white: 0.97, alpha: 1)
 
         setupNavigationBar()
 
         // TODO: Добавить PlaceholderView, если нет items
 
+
+//        collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
+//        collectionView.dataSource = self
+//        collectionView.backgroundColor = .clear
+//        collectionView.register(
+//            RoomHeaderCell.self,
+//            forCellWithReuseIdentifier: RoomHeaderCell.reuseIdentifier
+//        )
+//        collectionView.register(
+//            RoomItemCell.self,
+//            forCellWithReuseIdentifier: RoomItemCell.reuseIdentifier
+//        )
+//        view.addSubview(collectionView)
+//
+//        collectionView.translatesAutoresizingMaskIntoConstraints = false
+//        NSLayoutConstraint.activate([
+//            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+//            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+//            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+//        ])
+        
+        setupAddItemButton()
+    }
+
+    func setupCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -66,15 +96,12 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-        
-        setupAddItemButton()
     }
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == Section.header.rawValue {
             return 1
         } else {
-            return model.items.count
+            return zones.count
         }
     }
 
@@ -93,12 +120,16 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
                 for: indexPath
             ) as! RoomHeaderCell
             // swiftlint:enable force_cast
-            cell.configure(
-                roomName: model.name,
-                subtitle: "Cleaning items in this room",
-                image: model.emojiIcon.asImage(),
-                progress: "2/3 Clean  ・  48%"
-            )
+            if let room {
+                cell.configure(
+                    roomName: room.name,
+                    subtitle: "Cleaning items in this room",
+                    image: room.icon.asImage(),
+                    progress: "2/3 Clean  ・  48%"
+                )
+            } else {
+                print("")
+            }
             return cell
         } else {
             // swiftlint:disable force_cast
@@ -108,14 +139,11 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
             ) as! RoomItemCell
             // swiftlint:enable force_cast
             cell.configure(
-                icon: model.items[indexPath.item].icon,
-                title: model.items[indexPath.item].title,
-                percent: model.items[indexPath.item].cleanlinessPercent,
-                date: model.items[indexPath.item].lastCleaningDate,
-                state: model.items[indexPath.item].state.title,
-                cleanCount: model.items[indexPath.item].cleanCount,
-                cleaningFrequency: model.items[indexPath.item].cleaningFrequency.title,
-                nextDate: model.items[indexPath.item].nextDate
+                icon: zones[indexPath.item].icon,
+                title: zones[indexPath.item].name,
+                date: zones[indexPath.item].lastCleanedAt,
+                cleaningFrequency: zones[indexPath.item].frequency.rawValue,
+                nextDate: zones[indexPath.item].nextDueAt
             )
             return cell
         }
@@ -154,7 +182,7 @@ private extension RoomViewController {
         }
     }
 
-    private func setupNavigationBar() {
+    func setupNavigationBar() {
         let settingsButton = UIBarButtonItem(
             image: UIImage(systemName: "gearshape"),
             style: .plain,
@@ -165,7 +193,7 @@ private extension RoomViewController {
         navigationItem.title = model.name
     }
     
-    private func setupAddItemButton() {
+    func setupAddItemButton() {
         addItemButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addItemButton)
 
@@ -179,13 +207,29 @@ private extension RoomViewController {
         addItemButton.addTarget(self, action: #selector(didTapAddItemButton), for: .touchUpInside)
     }
 
-    @objc private func settingsButtonTapped() {
+    func showItems(roomId id: String) {
+        Task {
+            do {
+                let rooms = try await RoomService.shared.getRoomZones(id: id)
+                await MainActor.run {
+                    self.zones = rooms
+                    setupCollectionView()
+                }
+            } catch {
+                await MainActor.run {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    @objc func settingsButtonTapped() {
         // Handle Settings button tap
         print("Settings button tapped")
     }
     
     @objc
-    private func didTapAddItemButton() {
+    func didTapAddItemButton() {
         let modalVC = CleaningManager.AddItemModalScreen()
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
