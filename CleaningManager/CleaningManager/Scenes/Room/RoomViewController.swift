@@ -224,7 +224,11 @@ private extension RoomViewController {
     }
 
     @objc func settingsButtonTapped() {
-        // Handle Settings button tap
+        let modalVC = CleaningManager.EntitySettingsModalScreen()
+        modalVC.items = model.items
+        modalVC.modalPresentationStyle = .overFullScreen
+        modalVC.modalTransitionStyle = .crossDissolve
+        present(modalVC, animated: true, completion: nil)
         print("Settings button tapped")
     }
     
@@ -233,7 +237,6 @@ private extension RoomViewController {
         let modalVC = CleaningManager.AddItemModalScreen()
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
-        //modalVC.delegate = self
         present(modalVC, animated: true, completion: nil)
     }
 }

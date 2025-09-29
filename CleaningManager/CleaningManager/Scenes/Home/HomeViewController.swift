@@ -285,14 +285,9 @@ extension HomeViewController: AddRoomModalScreenDelegate {
             guard let self = self else { return }
             print("the modal window is closed")
             let roomVC = CleaningManager.RoomViewController()
-            roomVC.modalPresentationStyle = .overFullScreen
-            roomVC.modalTransitionStyle = .crossDissolve
             roomVC.delegate = self
-            self.present(roomVC, animated: true, completion: nil)
-        }
-        
-        func modalViewContollerDidClose(_ controller: AddRoomModalScreen) {
-            print("the modal window is closed")
+            let nav = self.navigationController
+            nav?.pushViewController(roomVC, animated: true)
         }
     }
 }
