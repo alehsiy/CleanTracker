@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 final class HomeViewController: UIViewController, roomViewControllerDelegate {
 
@@ -236,6 +237,11 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
     
     @objc
     private func didTapNotificationButton() {
+        let modalVC = UIHostingController(rootView: NotificationModalScreenView())
+        modalVC.view.backgroundColor = .clear
+        modalVC.modalPresentationStyle = .overFullScreen
+        modalVC.modalTransitionStyle = .crossDissolve
+        present(modalVC, animated: true, completion: nil)
         print("Notification button tapped!")
     }
 
