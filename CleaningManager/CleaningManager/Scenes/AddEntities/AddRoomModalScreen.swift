@@ -270,14 +270,16 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
     
     @objc
     private func addRoomButtonPressed() {
-        
         let roomName = nameOfRoomTextField.text ?? ""
         let roomIcon = selectedIcon ?? ""
-        delegate?.AddRoomModalScreen(
-            self,
-            didEnterName: roomName,
-            icon: roomIcon
-        )
+        Task {
+            try await RoomService.shared.createRoom(name: roomName, icon: roomIcon)
+        }
+//        delegate?.AddRoomModalScreen(
+//            self,
+//            didEnterName: roomName,
+//            icon: roomIcon
+//        )
         print("Введено: \(roomName), Выбрана иконка: \(roomIcon)")
     }
 }

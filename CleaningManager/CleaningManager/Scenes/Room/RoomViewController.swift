@@ -238,5 +238,6 @@ private extension RoomViewController {
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
         present(modalVC, animated: true, completion: nil)
+        print("Add item button tapped")
     }
 }

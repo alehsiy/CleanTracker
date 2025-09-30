@@ -52,7 +52,7 @@ extension RoomItemCell {
         actionButton.setTitle("Done", for: .normal)
         actionButton.titleLabel?.textColor = .white
         actionButton.tintColor = .white
-        infoLabel.text = "3 cleans ・ \(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
+        infoLabel.text = "\(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
     }
 }
 

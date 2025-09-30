@@ -54,6 +54,7 @@ actor NetworkManager {
         if let body {
             request.httpBody = try? encoder.encode(body)
         }
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 //        return AF.request(request).resume().data
         return try await withCheckedThrowingContinuation { continuation in
             AF.request(request).responseData { response in
