@@ -9,11 +9,13 @@ import SwiftUI
 
 struct NotificationModalScreenView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var hoursAndMinutes = Date()
+    // @State private var hoursAndMinutes = Date()
     @State private var frequency = ["Daily", "Weekly", "Monthly"]
     @State private var selectedDate = Date()
     @State private var selectedFrequency = 0
     @State private var showAlert = false
+    @State private var selectedWeekday = 2
+    @State private var selectedDayOfMonth = 1
 
     var body: some View {
         ZStack {
@@ -64,13 +66,72 @@ struct NotificationModalScreenView: View {
                 .frame(width: 300, alignment: .leading)
                 .padding(.top, 4)
 
-            Picker("Выбор", selection: $selectedFrequency) {
-                ForEach(0..<frequency.count, id: \.self) { index in
-                    Text(frequency[index]).tag(index)
+            HStack(spacing: 8) {
+                Picker("Frequency", selection: $selectedFrequency.animation()) {
+                    ForEach(0..<frequency.count, id: \.self) { index in
+                        Text(frequency[index]).tag(index)
+                            .font(.system(size: 18))
+                            .foregroundColor(.red)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(width: (selectedFrequency == 0 ? 300 : 220))
+
+                if selectedFrequency == 1 {
+                    Menu {
+                        ForEach(1...7, id: \.self) { day in
+                            Button(action: {
+                                selectedWeekday = day
+                            })
+                            {
+                                Text(weekdayName(for: day))
+                                    .font(.system(size: 14))
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Text(weekdayName(for: selectedWeekday, short: true))
+                                .frame(width: 36, height: 14)
+                                .foregroundColor(.black)
+                            Image(systemName: "chevron.down")
+                        }
+                        .padding(8)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                    }
+                    .frame(width: 80)
+                }
+
+                if selectedFrequency == 2 {
+                    Menu {
+                        ForEach(1...31, id: \.self) { day in
+                            Button(action: {
+                                selectedDayOfMonth = day
+                            })
+                            {
+                                Text("\(day)")
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(
+                                selectedDayOfMonth > 0
+                                    ? "\(selectedDayOfMonth)" : "Select"
+                            )
+                            .frame(width: 42, height: 14)
+                            .foregroundColor(.black)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 12, weight: .bold))
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 8)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                    }
+                    .frame(width: 80)
                 }
             }
-            .pickerStyle(.segmented)
-            .frame(width: 300, height: 40)
+            .frame(width: 300)
 
             selectHourAndMinutes
 
@@ -81,68 +142,111 @@ struct NotificationModalScreenView: View {
                             .checkForPermission()
 
                         if hasPermission {
-                            let repeatingComponents = createRepeatingComponents(
-                                frequencyIndex: selectedFrequency,
-                                selectedTime: selectedDate
-                            )
                             NotificationService.shared.cancelAll()
 
-                            NotificationService.shared.dispatchNotification(
-                                identifier: "cleaning_reminder",
-                                title: "It's time to clean",
-                                body: "Let's have some fun. This mop is sick",
-                                dateComponents: repeatingComponents,
-                                repeats: true
-                            )
-                            // --- ДЕБАГ-БЛОК ДЛЯ ПРОВЕРКИ ---
+                            let timeComponents = Calendar.current
+                                .dateComponents(
+                                    [.hour, .minute],
+                                    from: selectedDate
+                                )
+
+                            switch selectedFrequency {
+                            case 0:
+                                var dailyComponents = DateComponents()
+                                dailyComponents.hour = timeComponents.hour
+                                dailyComponents.minute = timeComponents.minute
+
+                                NotificationService.shared.dispatchNotification(
+                                    identifier: "cleaning_reminder_daily",
+                                    title: "It's time to clean",
+                                    body:
+                                        "Let's have some fun. This mop is sick",
+                                    dateComponents: dailyComponents,
+                                    repeats: true
+                                )
+                            case 1:
+                                var weeklyComponents = DateComponents()
+                                weeklyComponents.hour = timeComponents.hour
+                                weeklyComponents.minute = timeComponents.minute
+                                weeklyComponents.weekday = selectedWeekday
+
+                                NotificationService.shared.dispatchNotification(
+                                    identifier:
+                                        "cleaning_reminder_weekly_\(selectedWeekday)",
+                                    title: "It's time to clean",
+                                    body:
+                                        "Let's have some fun. This mop is sick",
+                                    dateComponents: weeklyComponents,
+                                    repeats: true
+                                )
+                            case 2:
+                                var monthlyComponents = DateComponents()
+                                monthlyComponents.hour = timeComponents.hour
+                                monthlyComponents.minute = timeComponents.minute
+                                monthlyComponents.day = selectedDayOfMonth
+                                NotificationService.shared.dispatchNotification(
+                                    identifier:
+                                        "cleaning_reminder_monthly_\(selectedDayOfMonth)",
+                                    title: "It's time to clean",
+                                    body:
+                                        "Let's have some fun. This mop is sick",
+                                    dateComponents: monthlyComponents,
+                                    repeats: true
+                                )
+                            default:
+                                break
+                            }
+
+                            // ДЕБАГ ДЕБАГ
+
                             NotificationService.shared.getPending { requests in
                                 print(
                                     "--- 📱 ПРОВЕРКА ЗАПЛАНИРОВАННЫХ УВЕДОМЛЕНИЙ ---"
                                 )
-                                guard
-                                    let request = requests.first(where: {
-                                        $0.identifier == "cleaning_reminder"
-                                    })
-                                else {
-                                    print("🔴 Уведомление не найдено в очереди.")
+                                if requests.isEmpty {
+                                    print(
+                                        "🔴 Нет ни одного запланированного уведомления."
+                                    )
                                     return
                                 }
-
-                                print("✅ Уведомление успешно запланировано!")
-                                if let trigger = request.trigger
-                                    as? UNCalendarNotificationTrigger
-                                {
+                                for request in requests {
                                     print(
-                                        "Компоненты для триггера: \(trigger.dateComponents)"
+                                        "✅ Уведомление: \(request.identifier)"
                                     )
-
-                                    if let nextFireDate =
-                                        trigger.nextTriggerDate()
+                                    if let trigger = request.trigger
+                                        as? UNCalendarNotificationTrigger
                                     {
-                                        // Вызываем нашу новую функцию для расчета следующих 3-х дат
-                                        let nextThreeFires =
-                                            self.getNextTriggerDates(
-                                                from: nextFireDate,
-                                                frequencyIndex: self
-                                                    .selectedFrequency,  // Используем текущий выбор
-                                                count: 3
-                                            )
-
-                                        print("➡️ Следующие 3 срабатывания:")
-                                        for (index, dateString)
-                                            in nextThreeFires.enumerated()
+                                        print(
+                                            "Компоненты для триггера: \(trigger.dateComponents)"
+                                        )
+                                        if let nextFireDate =
+                                            trigger.nextTriggerDate()
                                         {
-                                            print(
-                                                "   \(index + 1). \(dateString)"
-                                            )
+                                            let nextThreeFires =
+                                                self.getNextTriggerDates(
+                                                    from: nextFireDate,
+                                                    frequencyIndex: self
+                                                        .selectedFrequency,
+                                                    count: 3
+                                                )
+                                            print("➡️ Следующие 3 срабатывания:")
+                                            for (index, dateString)
+                                                in nextThreeFires.enumerated()
+                                            {
+                                                print(
+                                                    "   \(index + 1). \(dateString)"
+                                                )
+                                            }
                                         }
                                     }
+                                    print(
+                                        "-------------------------------------------------"
+                                    )
                                 }
-                                print(
-                                    "-------------------------------------------------"
-                                )
                             }
-                            // --- КОНЕЦ БЛОКА ДЛЯ ДЕБАГА ---
+
+                            // ДЕБАГ ДЕБАГ
+
                             dismiss()
                         } else {
                             showAlert = true
@@ -175,32 +279,14 @@ struct NotificationModalScreenView: View {
 
 extension NotificationModalScreenView {
 
-    private func createRepeatingComponents(
-        frequencyIndex: Int,
-        selectedTime: Date
-    ) -> DateComponents {
-        let calendar = Calendar.current
-        let now = Date()
-
-        let timeComponents = calendar.dateComponents(
-            [.hour, .minute],
-            from: selectedTime
-        )
-
-        var components = DateComponents()
-        components.hour = timeComponents.hour
-        components.minute = timeComponents.minute
-
-        switch frequencyIndex {
-        case 1:
-            components.weekday = calendar.component(.weekday, from: now)
-        case 2:
-            components.day = calendar.component(.day, from: now)
-        default:  // Ежедневно
-            break
-        }
-
-        return components
+    private func weekdayName(for dayNumber: Int, short: Bool = false) -> String
+    {
+        let formatter = DateFormatter()
+        let symbols =
+            short ? formatter.shortWeekdaySymbols : formatter.weekdaySymbols
+        guard let symbols = symbols, dayNumber > 0, dayNumber <= symbols.count
+        else { return "" }
+        return symbols[dayNumber - 1]
     }
 
     /// Рассчитывает и форматирует следующие несколько дат срабатывания для дебага.
@@ -212,7 +298,6 @@ extension NotificationModalScreenView {
         let calendar = Calendar.current
         var dates: [Date] = [firstDate]
 
-        // Определяем шаг для следующей даты
         var dateComponent: Calendar.Component
         switch frequencyIndex {
         case 0:  // Daily
@@ -225,7 +310,6 @@ extension NotificationModalScreenView {
             dateComponent = .day
         }
 
-        // Рассчитываем следующие даты
         for _ in 1..<count {
             if let lastDate = dates.last,
                 let nextDate = calendar.date(
@@ -238,7 +322,6 @@ extension NotificationModalScreenView {
             }
         }
 
-        // Форматируем для вывода
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE, MMM d, yyyy 'at' h:mm a"
         return dates.map { formatter.string(from: $0) }
