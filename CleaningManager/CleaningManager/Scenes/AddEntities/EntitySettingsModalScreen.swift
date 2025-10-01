@@ -11,8 +11,9 @@ final class EntitySettingsModalScreen: UIViewController {
     
     weak var delegate: AddItemModalScreenDelegate?
     var selectedIcon: String?
-    var items: [RoomItem] = []
-    
+    var items: [Zone] = []
+    var roomId: String?
+
     // MARK: - Private properties
     private let containerView = UIView()
     private let titleLabel = UILabel()
@@ -22,7 +23,8 @@ final class EntitySettingsModalScreen: UIViewController {
     private let descriptionForRoomItemsStack = UILabel()
     private let nameOfItemTextField = UITextField()
     private let confirmChangesButton = UIButton()
-    
+    var onAddingItem: (() -> Void)?
+
     private let tableWithRoomItems = UITableView(frame: .zero, style: .plain)
     
     // MARK: - Life cycle
@@ -76,7 +78,7 @@ final class EntitySettingsModalScreen: UIViewController {
         containerView.addSubview(confirmChangesButton)
         confirmChangesButton.addTarget(
             self,
-            action: #selector(addItemButtonPressed),
+            action: #selector(confirmChangeButtonPressed),
             for: .touchUpInside
         )
         confirmChangesButton.setTitle("Confirm changes", for: .normal)
@@ -170,7 +172,7 @@ final class EntitySettingsModalScreen: UIViewController {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        addItemButtonPressed()
+        confirmChangeButtonPressed()
         return true
     }
 }
@@ -188,8 +190,8 @@ extension EntitySettingsModalScreen: UITableViewDataSource {
             fatalError("error in cell")
         }
         let item = items[indexPath.row]
-        cell.configure(with: item.title)
-        
+        cell.configure(with: item.name)
+
         return cell
     }
 }
@@ -197,7 +199,7 @@ extension EntitySettingsModalScreen: UITableViewDataSource {
 extension EntitySettingsModalScreen: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedItem = items[indexPath.row]
-        let selectedItemTitle = selectedItem.title
+        let selectedItemTitle = selectedItem.name
         let alert = UIAlertController(
             title: "Confirm delete \(selectedItemTitle)",
             message: "Are you sure?",
@@ -217,7 +219,12 @@ extension EntitySettingsModalScreen: UITableViewDelegate {
             UIAlertAction(
                 title: "Yes",
                 style: .default,
-                handler: { _ in
+                handler: { [weak self] _ in
+                    Task {
+                        try await ZoneService.shared.deleteZone(id: self!.items[indexPath.row].id)
+                        self?.onAddingItem?()
+                        self?.tableWithRoomItems.reloadData()
+                    }
                     print("user tap Yes")
                 }
             )
@@ -356,9 +363,17 @@ private extension EntitySettingsModalScreen {
     }
     
     @objc
-    private func addItemButtonPressed() {
+    private func confirmChangeButtonPressed() {
+        guard let id = roomId else {
+            // TODO: Сделать алёрт
+            return
+        }
         let itemName = nameOfItemTextField.text ?? ""
         let itemIcon = selectedIcon ?? ""
+        Task {
+            try await RoomService.shared.updateRoom(id: id, name: itemName, icon: itemIcon)
+            onAddingItem?()
+        }
         dismiss(animated: true, completion: nil)
         print("Введено: \(itemName), Выбрана иконка: \(itemIcon), Выбрана")
     }
