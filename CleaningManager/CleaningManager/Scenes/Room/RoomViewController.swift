@@ -34,9 +34,9 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
     private let addItemButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Add item", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        button.tintColor = .label
-        button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        button.tintColor = .white
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 16
         button.layer.cornerCurve = .continuous
         return button
@@ -203,7 +203,6 @@ private extension RoomViewController {
     func setupAddItemButton() {
         addItemButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addItemButton)
-
         NSLayoutConstraint.activate([
             addItemButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             addItemButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
