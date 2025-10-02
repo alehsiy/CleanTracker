@@ -266,9 +266,10 @@ extension HomeViewController: UITableViewDataSource {
         }
         let room = rooms[indexPath.row]
         cell.configure(with: room)
-        let roomViewController = RoomViewController()
-        cell.onTap = { [navigationController] in
-            navigationController?.pushViewController(roomViewController, animated: true)
+        cell.onTap = {
+            let roomViewController = RoomViewController()
+            roomViewController.room = self.rooms[indexPath.row]
+            self.navigationController?.pushViewController(roomViewController, animated: true)
         }
         return cell
     }
@@ -289,7 +290,7 @@ extension HomeViewController: AddRoomModalScreenDelegate {
         controller.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
             print("the modal window is closed")
-            let roomVC = CleaningManager.RoomViewController()
+            let roomVC = RoomViewController()
             roomVC.delegate = self
             let nav = self.navigationController
             nav?.pushViewController(roomVC, animated: true)

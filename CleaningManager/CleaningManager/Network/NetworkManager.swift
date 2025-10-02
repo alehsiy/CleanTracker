@@ -29,12 +29,15 @@ actor NetworkManager {
         decoder.dateDecodingStrategy = .formatted(dateFormatter)
     }
 
+    @discardableResult
     func request(
         url: URL,
         method: HTTPMethod
     ) async throws -> Data? {
+        var request = try URLRequest(url: url, method: method)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         return try await withCheckedThrowingContinuation { continuation in
-            AF.request(url, method: method).responseData { response in
+            AF.request(request).responseData { response in
                 switch(response.result) {
                 case let .success(data):
                     continuation.resume(returning: data)
@@ -54,7 +57,7 @@ actor NetworkManager {
         if let body {
             request.httpBody = try? encoder.encode(body)
         }
-//        return AF.request(request).resume().data
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         return try await withCheckedThrowingContinuation { continuation in
             AF.request(request).responseData { response in
                 switch(response.result) {

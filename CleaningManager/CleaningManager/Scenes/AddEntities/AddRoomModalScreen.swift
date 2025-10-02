@@ -19,7 +19,7 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
     
     weak var delegate: AddRoomModalScreenDelegate?
     var selectedIcon: String?
-    
+
     // MARK: - Private properties
     private let containerView = UIView()
     private let titleLabel = UILabel()
@@ -273,6 +273,9 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         
         let roomName = nameOfRoomTextField.text ?? ""
         let roomIcon = selectedIcon ?? ""
+        Task {
+            try await RoomService.shared.createRoom(name: roomName, icon: roomIcon)
+        }
         delegate?.AddRoomModalScreen(
             self,
             didEnterName: roomName,

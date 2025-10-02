@@ -21,7 +21,9 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
     weak var delegate: AddItemModalScreenDelegate?
     var selectedIcon: String?
     var selectedFrequency: String?
-    
+    var roomId: String!
+    var onAddingItem: (() -> Void)?
+
     // MARK: - Private properties
     private let containerView = UIView()
     private let titleLabel = UILabel()
@@ -349,6 +351,10 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
             icon: itemIcon,
             frequency: itemFrequency
         )
+        Task {
+            try await RoomService.shared.createZone(id: roomId, name: itemName, icon: itemIcon, frequency: itemFrequency)
+            onAddingItem?()
+        }
         dismiss(animated: true, completion: nil)
         print("Введено: \(itemName), Выбрана иконка: \(itemIcon), Выбрана частота:\(itemFrequency)")
     }

@@ -7,11 +7,34 @@
 
 import UIKit
 
+//final class RoomItemCell: UITableViewCell {
+//    private let iconView = UIImageView()
+//    private let nameLabel = UILabel()
+//    private let nextDateLabel = UILabel()
+//    private let lastDateLabel = UILabel()
+//    private let frequencyLabel = UILabel()
+//    private let actionButton = UIButton()
+//
+//    static let reuseIdentifier = String(describing: RoomItemCell.self)
+//
+//    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+//        super.init(style: style, reuseIdentifier: reuseIdentifier)
+//
+//        //        addSubviews()
+//        //        setupLayout()
+//    }
+//
+//    @available(*, unavailable)
+//    required init?(coder: NSCoder) {
+//        fatalError("Not implemented")
+//    }
+//}
+//
 final class RoomItemCell: UICollectionViewCell {
+    var itemId: String?
+    var onCleanItem: (() -> Void)?
     private let iconView = UIImageView()
     private let nameLabel = UILabel()
-    private let progressView = UIProgressView()
-    private let percentLabel = UILabel()
     private let lastDateLabel = UILabel()
     private let infoLabel = UILabel()
     private let actionButton = UIButton(type: .system)
@@ -34,29 +57,55 @@ final class RoomItemCell: UICollectionViewCell {
 }
 
 extension RoomItemCell {
+    func configure(info: Zone) {
+        iconView.image = info.icon.asImage() ?? UIImage(systemName: "questionmark")
+        nameLabel.text = info.name
+//        lastDateLabel.text = info.lastCleanedAt?.ISO8601Format()
+//        actionButton.setTitle("Done", for: .normal)
+//        actionButton.titleLabel?.textColor = .white
+//        actionButton.tintColor = .white
+//        infoLabel.text = "\(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
+    }
+}
+
+extension RoomItemCell {
     func configure(
         icon: String,
         title: String,
-        percent: String,
-        date: String,
-        state: String,
-        cleanCount: String,
+        lastDate: Date?,
         cleaningFrequency: String,
-        nextDate: String
+        nextDate: Date?,
+        isDue: Bool
     ) {
-        if let image = icon.asImage() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        if !icon.isEmpty, let image = icon.asImage() {
             iconView.image = image
         } else {
             iconView.image = UIImage(systemName: "questionmark")
         }
-        // TODO: Менять цвет в зависимости от состояния
         nameLabel.text = title
-        percentLabel.text = "\(percent) clean"
-        lastDateLabel.text = "date"
-        actionButton.setTitle("Done", for: .normal)
+        if let lastDate {
+            lastDateLabel.text = "Last date cleaned: \(dateFormatter.string(from: lastDate))"
+        } else {
+            lastDateLabel.text = "Item has not been cleaned yet"
+        }
         actionButton.titleLabel?.textColor = .white
         actionButton.tintColor = .white
-        infoLabel.text = "\(String(describing: cleanCount)) ・ \(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
+        if isDue {
+            actionButton.backgroundColor = .systemRed
+            actionButton.setTitle("Clean", for: .normal)
+            actionButton.addTarget(self, action: #selector(cleanButtonPressed(_:)), for: .touchUpInside)
+        } else {
+            actionButton.setTitle("Done", for: .normal)
+            actionButton.backgroundColor = .systemBlue
+        }
+        if let nextDate {
+            infoLabel.text = "\(String(describing: cleaningFrequency).capitalized) ・ Next date: \(dateFormatter.string(from: nextDate))"
+        } else {
+            infoLabel.text = "\(String(describing: cleaningFrequency).capitalized) ・ No next date yet"
+        }
     }
 }
 
@@ -65,9 +114,7 @@ private extension RoomItemCell {
         contentView.addSubview(iconView)
         contentView.addSubview(actionButton)
         contentView.addSubview(stackView)
-        infoView.addSubview(percentLabel)
         infoView.addSubview(lastDateLabel)
-        infoView.addSubview(progressView)
         stackView.addArrangedSubview(nameLabel)
         stackView.addArrangedSubview(infoView)
         stackView.addArrangedSubview(infoLabel)
@@ -81,12 +128,9 @@ private extension RoomItemCell {
         iconView.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         infoView.translatesAutoresizingMaskIntoConstraints = false
-        percentLabel.translatesAutoresizingMaskIntoConstraints = false
-        progressView.translatesAutoresizingMaskIntoConstraints = false
         actionButton.translatesAutoresizingMaskIntoConstraints = false
         lastDateLabel.translatesAutoresizingMaskIntoConstraints = false
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
-        progressView.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
         layer.cornerRadius = 16
@@ -101,7 +145,6 @@ private extension RoomItemCell {
         // MARK: Fonts
 
         nameLabel.font = .boldSystemFont(ofSize: 17)
-        percentLabel.font = .systemFont(ofSize: 13)
         lastDateLabel.font = .systemFont(ofSize: 13)
         actionButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .bold)
         infoLabel.font = .systemFont(ofSize: 13)
@@ -109,11 +152,9 @@ private extension RoomItemCell {
 
         // MARK: Colors
 
-        percentLabel.textColor = .gray
         lastDateLabel.textColor = .gray
         infoLabel.textColor = .gray
         actionButton.titleLabel?.textColor = .white
-        actionButton.backgroundColor = .systemBlue
 
         // MARK: Constraints
 
@@ -123,14 +164,7 @@ private extension RoomItemCell {
             iconView.widthAnchor.constraint(equalToConstant: 32),
             iconView.heightAnchor.constraint(equalToConstant: 32),
 
-            percentLabel.leadingAnchor.constraint(equalTo: infoView.leadingAnchor),
-            percentLabel.bottomAnchor.constraint(equalTo: progressView.topAnchor),
-            lastDateLabel.trailingAnchor.constraint(equalTo: infoView.trailingAnchor),
-            lastDateLabel.bottomAnchor.constraint(equalTo: progressView.topAnchor),
-            progressView.widthAnchor.constraint(equalTo: infoView.widthAnchor),
-            progressView.heightAnchor.constraint(equalToConstant: 4),
-            progressView.bottomAnchor.constraint(equalTo: infoView.bottomAnchor),
-            progressView.centerXAnchor.constraint(equalTo: infoView.centerXAnchor),
+            lastDateLabel.leadingAnchor.constraint(equalTo: infoView.leadingAnchor),
             infoView.widthAnchor.constraint(equalTo: stackView.widthAnchor),
 
             stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -144,5 +178,14 @@ private extension RoomItemCell {
             actionButton.widthAnchor.constraint(equalToConstant: 65),
             actionButton.heightAnchor.constraint(equalToConstant: 32),
         ])
+    }
+
+    @objc
+    private func cleanButtonPressed(_ sender: UIButton) {
+        guard let id = itemId else { return }
+        Task {
+            try await ZoneService.shared.cleanZone(id: id)
+            onCleanItem?()
+        }
     }
 }
