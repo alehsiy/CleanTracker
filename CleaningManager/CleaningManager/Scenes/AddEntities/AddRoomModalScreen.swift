@@ -11,7 +11,8 @@ protocol AddRoomModalScreenDelegate: AnyObject {
     func AddRoomModalScreen(
         _ controller: AddRoomModalScreen,
         didEnterName name: String,
-        icon: String
+        icon: String,
+        roomId: String
     )
 }
 
@@ -273,14 +274,20 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         
         let roomName = nameOfRoomTextField.text ?? ""
         let roomIcon = selectedIcon ?? ""
+        var roomId: String?
         Task {
-            try await RoomService.shared.createRoom(name: roomName, icon: roomIcon)
+            roomId = try await RoomService.shared.createRoom(name: roomName, icon: roomIcon).id
+            if let roomId {
+                delegate?.AddRoomModalScreen(
+                    self,
+                    didEnterName: roomName,
+                    icon: roomIcon,
+                    roomId: roomId
+                )
+            } else {
+                dismiss(animated: true)
+            }
         }
-        delegate?.AddRoomModalScreen(
-            self,
-            didEnterName: roomName,
-            icon: roomIcon
-        )
         print("Введено: \(roomName), Выбрана иконка: \(roomIcon)")
     }
 }
