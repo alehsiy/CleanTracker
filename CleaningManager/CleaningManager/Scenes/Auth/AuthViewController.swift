@@ -112,31 +112,17 @@ final class AuthViewController: UIViewController {
     private func showLoginModal() {
         let loginVC = LoginModalScreen()
         loginVC.onSuccess = { [weak self] in
-            self?.navigateToMainApp()
+            self?.dismiss(animated: true)
         }
-        let navController = UINavigationController(rootViewController: loginVC)
-        navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: true)
+        present(loginVC, animated: true)
     }
 
     private func showRegisterModal() {
         let registerVC = RegisterModalScreen()
         registerVC.onSuccess = { [weak self] in
-            self?.navigateToMainApp()
+            self?.dismiss(animated: true)
         }
-        let navController = UINavigationController(rootViewController: registerVC)
-        navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: true)
-    }
-
-    private func navigateToMainApp() {
-        let homeVC = HomeViewController()
-        let navController = UINavigationController(rootViewController: homeVC)
-        navController.modalPresentationStyle = .fullScreen
-
-        present(navController, animated: true) { [weak self] in
-            self?.dismiss(animated: false)
-        }
+        present(registerVC, animated: true)
     }
 
     // MARK: - Helpers

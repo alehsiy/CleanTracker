@@ -198,23 +198,20 @@ final class RegisterModalScreen: UIViewController,  UITextFieldDelegate {
 
         isLoading = true
 
-        Task {
-            do {
-                let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-                let username = name?.isEmpty == false ? name! : email
+        let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let username = name?.isEmpty == false ? name! : email
 
-                let authResponse = try await AuthService.shared.register(name: username, email: email, password: password)
+        AuthService.shared.register(username: username, email: email, password: password) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
 
-                await MainActor.run {
-                    self.isLoading = false
-                    self.dismiss(animated: true) {
-                        self.onSuccess?()
+                switch result {
+                case .success:
+                    self?.dismiss(animated: true) {
+                        self?.onSuccess?()
                     }
-                }
-            } catch {
-                await MainActor.run {
-                    self.isLoading = false
-                    self.showError(message: error.localizedDescription)
+                case .failure(let error):
+                    self?.showError(message: error.localizedDescription)
                 }
             }
         }

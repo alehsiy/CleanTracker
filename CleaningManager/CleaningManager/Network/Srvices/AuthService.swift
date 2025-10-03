@@ -22,73 +22,110 @@ actor AuthService {
     private init() {}
 
     // MARK: - Login
-    func login(email: String, password: String) async throws -> AuthResponse {
-        let url = URLBuilder.shared.create(for: .auth(.login))
-        let loginRequest = LoginUser(email: email, password: password)
+    func login(
+        email: String,
+        password: String,
+        completion: @escaping (Result<AuthResponse, Error>) -> Void
+    ) {
+        Task {
+            do {
+                let url = URLBuilder.shared.create(for: .auth(.login))
+                let loginRequest = LoginUser(email: email, password: password)
 
-        do {
-            let data = try await NetworkManager.shared.request(
-                url: url,
-                method: .post,
-                body: loginRequest
-            )
+                let data = try await NetworkManager.shared.request(
+                    url: url,
+                    method: .post,
+                    body: loginRequest
+                )
 
-            guard let data = data else {
-                throw AuthServiceError.unknown
+                guard let data = data else {
+                    throw AuthServiceError.unknown
+                }
+
+                let authResponse = try await NetworkManager.shared.parseJSON(with: AuthResponse.self, data: data)
+                guard let authResponse = authResponse else {
+                    throw AuthServiceError.decodingError
+                }
+
+                try await keychainService.saveAccessToken(authResponse.access_token)
+                try await keychainService.saveRefreshToken(authResponse.refresh_token)
+
+                await MainActor.run {
+                    completion(.success(authResponse))
+                }
+            } catch let error as AFError {
+                if let statusCode = error.responseCode, statusCode == 401 {
+                    await MainActor.run {
+                        completion(.failure(AuthServiceError.invalidCredentials))
+                    }
+                } else {
+                    await MainActor.run {
+                        completion(.failure(AuthServiceError.networkError(error)))
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    completion(.failure(AuthServiceError.networkError(error)))
+                }
             }
-
-            let authResponse = try await NetworkManager.shared.parseJSON(with: AuthResponse.self, data: data)
-            guard let authResponse = authResponse else {
-                throw AuthServiceError.decodingError
-            }
-
-            try await keychainService.saveAccessToken(authResponse.access_token)
-            try await keychainService.saveRefreshToken(authResponse.refresh_token)
-
-            return authResponse
-        } catch let error as AFError {
-            if let statusCode = error.responseCode, statusCode == 401 {
-                throw AuthServiceError.invalidCredentials
-            }
-            throw AuthServiceError.networkError(error)
-        } catch {
-            throw AuthServiceError.networkError(error)
         }
     }
 
     // MARK: - Register
-    func register(name: String, email: String, password: String) async throws -> AuthResponse {
-        let url = URLBuilder.shared.create(for: .auth(.register))
-        let clientId = "ios"
-        let registerRequest = RegisterUser(client_id: clientId, email: email, password: password, username: name)
+    func register(
+        username: String,
+        email: String,
+        password: String,
+        completion: @escaping (Result<AuthResponse, Error>) -> Void
+    ) {
+        Task {
+            do {
+                let url = URLBuilder.shared.create(for: .auth(.register))
+                let clientId = "ios"
 
-        do {
-            let data = try await NetworkManager.shared.request(
-                url: url,
-                method: .post,
-                body: registerRequest
-            )
+                let registerRequest = RegisterUser(
+                    client_id: clientId,
+                    email: email,
+                    password: password,
+                    username: username
+                )
 
-            guard let data = data else {
-                throw AuthServiceError.unknown
+                let data = try await NetworkManager.shared.request(
+                    url: url,
+                    method: .post,
+                    body: registerRequest
+                )
+
+                guard let data = data else {
+                    throw AuthServiceError.unknown
+                }
+
+                let authResponse = try await NetworkManager.shared.parseJSON(with: AuthResponse.self, data: data)
+                guard let authResponse = authResponse else {
+                    throw AuthServiceError.decodingError
+                }
+
+                try await keychainService.saveAccessToken(authResponse.access_token)
+                try await keychainService.saveRefreshToken(authResponse.refresh_token)
+
+                await MainActor.run {
+                    completion(.success(authResponse))
+                }
+            } catch let error as AFError {
+                if let statusCode = error.responseCode, statusCode == 400 {
+                    await MainActor.run {
+                        completion(.failure(AuthServiceError.invalidCredentials))
+                    }
+                } else {
+                    await MainActor.run {
+                        completion(.failure(AuthServiceError.networkError(error)))
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    completion(.failure(AuthServiceError.networkError(error)))
+                }
             }
-
-            let authResponse = try await NetworkManager.shared.parseJSON(with: AuthResponse.self, data: data)
-            guard let authResponse = authResponse else {
-                throw AuthServiceError.decodingError
-            }
-
-            try await keychainService.saveAccessToken(authResponse.access_token)
-            try await keychainService.saveRefreshToken(authResponse.refresh_token)
-
-            return authResponse
-        } catch let error as AFError {
-            if let statusCode = error.responseCode, statusCode == 400 {
-                throw AuthServiceError.invalidCredentials
-            }
-            throw AuthServiceError.networkError(error)
-        } catch {
-            throw AuthServiceError.networkError(error)
         }
     }
 
