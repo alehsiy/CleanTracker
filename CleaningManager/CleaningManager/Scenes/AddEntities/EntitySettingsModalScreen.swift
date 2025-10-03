@@ -223,6 +223,7 @@ extension EntitySettingsModalScreen: UITableViewDelegate {
                     Task {
                         try await ZoneService.shared.deleteZone(id: self!.items[indexPath.row].id)
                         self?.onAddingItem?()
+                        self?.items = try await RoomService.shared.getRoomZones(id: self!.roomId!)
                         self?.tableWithRoomItems.reloadData()
                     }
                     print("user tap Yes")
