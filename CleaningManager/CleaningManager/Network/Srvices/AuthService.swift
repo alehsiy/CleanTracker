@@ -42,7 +42,8 @@ actor AuthService {
                 throw AuthServiceError.decodingError
             }
 
-            try await keychainService.saveToken(authResponse.access_token)
+            try await keychainService.saveAccessToken(authResponse.access_token)
+            try await keychainService.saveRefreshToken(authResponse.refresh_token)
 
             return authResponse
         } catch let error as AFError {
@@ -77,7 +78,8 @@ actor AuthService {
                 throw AuthServiceError.decodingError
             }
 
-            try await keychainService.saveToken(authResponse.access_token)
+            try await keychainService.saveAccessToken(authResponse.access_token)
+            try await keychainService.saveRefreshToken(authResponse.refresh_token)
 
             return authResponse
         } catch let error as AFError {
@@ -111,7 +113,8 @@ actor AuthService {
                 throw AuthServiceError.decodingError
             }
 
-            try await keychainService.saveToken(authResponse.access_token)
+            try await keychainService.saveAccessToken(authResponse.access_token)
+            try await keychainService.saveRefreshToken(authResponse.refresh_token)
 
             return authResponse
         } catch let error as AFError {
@@ -124,12 +127,21 @@ actor AuthService {
         }
     }
 
-    // MARK: - Check Authentication
-    func isAuthenticated() async -> Bool {
-        return await keychainService.getToken() != nil
+    // MARK: - Logout
+    func logout() async throws {
+        try await keychainService.deleteAllTokens()
     }
 
-    func getCurrentToken() async -> String? {
-        return await keychainService.getToken()
+    // MARK: - Check Authentication
+    func isAuthenticated() async -> Bool {
+        return await keychainService.getAccessToken() != nil
+    }
+
+    func getCurrentAccessToken() async -> String? {
+        return await keychainService.getAccessToken()
+    }
+
+    func getCurrentRefreshToken() async -> String? {
+        return await keychainService.getRefreshToken()
     }
 }

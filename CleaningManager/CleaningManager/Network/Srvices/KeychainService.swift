@@ -10,18 +10,38 @@ import Security
 actor KeychainService {
     static let shared = KeychainService()
 
-    private let tokenKey = "com.cleaningmanager.auth.token"
+    private let accessTokenKey = "com.cleaningmanager.auth.accessToken"
+    private let refreshTokenKey = "com.cleaningmanager.auth.refreshToken"
 
     private init() {}
 
-    func saveToken(_ token: String) throws {
+    // MARK: - Access Token
+    func saveAccessToken(_ token: String) throws {
+        try save(token, forKey: accessTokenKey)
+    }
+
+    func getAccessToken() -> String? {
+        return get(forKey: accessTokenKey)
+    }
+
+    // MARK: - Refresh Token
+    func saveRefreshToken(_ token: String) throws {
+        try save(token, forKey: refreshTokenKey)
+    }
+
+    func getRefreshToken() -> String? {
+        return get(forKey: refreshTokenKey)
+    }
+
+    // MARK: - Common Methods
+    private func save(_ token: String, forKey key: String) throws {
         guard let data = token.data(using: .utf8) else {
             throw KeychainError.encodingError
         }
 
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: tokenKey,
+            kSecAttrAccount as String: key,
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
         ]
@@ -34,10 +54,10 @@ actor KeychainService {
         }
     }
 
-    func getToken() -> String? {
+    private func get(forKey key: String) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: tokenKey,
+            kSecAttrAccount as String: key,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
@@ -52,10 +72,16 @@ actor KeychainService {
         return String(data: data, encoding: .utf8)
     }
 
-    func deleteToken() throws {
+    // MARK: - Cleanup
+    func deleteAllTokens() throws {
+        try delete(forKey: accessTokenKey)
+        try delete(forKey: refreshTokenKey)
+    }
+
+    private func delete(forKey key: String) throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: tokenKey
+            kSecAttrAccount as String: key
         ]
 
         let status = SecItemDelete(query as CFDictionary)

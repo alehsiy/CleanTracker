@@ -62,66 +62,66 @@ final class RegisterModalScreen: UIViewController,  UITextFieldDelegate {
         setupLayout()
     }
 
-        // MARK: - Setup
-        private func setupUI() {
-            view.addSubview(containerView)
-            containerView.backgroundColor = .white
-            containerView.layer.cornerRadius = 16
-            containerView.translatesAutoresizingMaskIntoConstraints = false
+    // MARK: - Setup
+    private func setupUI() {
+        view.addSubview(containerView)
+        containerView.backgroundColor = .white
+        containerView.layer.cornerRadius = 16
+        containerView.translatesAutoresizingMaskIntoConstraints = false
 
-            containerView.addSubview(titleLabel)
-            titleLabel.font = .boldSystemFont(ofSize: 16)
-            titleLabel.textAlignment = .center
-            titleLabel.text = "Register"
-            titleLabel.textColor = .systemBlue
-            titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(titleLabel)
+        titleLabel.font = .boldSystemFont(ofSize: 16)
+        titleLabel.textAlignment = .center
+        titleLabel.text = "Register"
+        titleLabel.textColor = .systemBlue
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
-            containerView.addSubview(closeButton)
-            closeButton.addTarget(
-                self,
-                action: #selector(closePressed),
-                for: .touchUpInside
-            )
-            closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-            closeButton.tintColor = .systemBlue
-            closeButton.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(closeButton)
+        closeButton.addTarget(
+            self,
+            action: #selector(closePressed),
+            for: .touchUpInside
+        )
+        closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        closeButton.tintColor = .systemBlue
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
 
-            containerView.addSubview(nameTextField)
-            nameTextField.placeholder = "Name"
-            nameTextField.borderStyle = .roundedRect
-            nameTextField.autocapitalizationType = .words
-            nameTextField.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(nameTextField)
+        nameTextField.placeholder = "Name"
+        nameTextField.borderStyle = .roundedRect
+        nameTextField.autocapitalizationType = .words
+        nameTextField.translatesAutoresizingMaskIntoConstraints = false
 
-            containerView.addSubview(emailTextField)
-            emailTextField.placeholder = "Email*"
-            emailTextField.borderStyle = .roundedRect
-            emailTextField.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(emailTextField)
+        emailTextField.placeholder = "Email*"
+        emailTextField.borderStyle = .roundedRect
+        emailTextField.translatesAutoresizingMaskIntoConstraints = false
 
-            containerView.addSubview(passwordTextField)
-            passwordTextField.placeholder = "Password*"
-            passwordTextField.borderStyle = .roundedRect
-            passwordTextField.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(passwordTextField)
+        passwordTextField.placeholder = "Password*"
+        passwordTextField.borderStyle = .roundedRect
+        passwordTextField.translatesAutoresizingMaskIntoConstraints = false
 
-            containerView.addSubview(confirmPasswordTextField)
-            confirmPasswordTextField.placeholder = "Confirm Password*"
-            confirmPasswordTextField.borderStyle = .roundedRect
-            confirmPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(confirmPasswordTextField)
+        confirmPasswordTextField.placeholder = "Confirm Password*"
+        confirmPasswordTextField.borderStyle = .roundedRect
+        confirmPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
 
-            containerView.addSubview(registerButton)
-            registerButton.addTarget(
-                self,
-                action: #selector(registerPressed),
-                for: .touchUpInside
-            )
-            registerButton.setTitle("Register", for: .normal)
-            registerButton.setTitleColor(.white, for: .normal)
-            registerButton.backgroundColor = .systemBlue
-            registerButton.layer.cornerRadius = 16
-            registerButton.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(registerButton)
+        registerButton.addTarget(
+            self,
+            action: #selector(registerPressed),
+            for: .touchUpInside
+        )
+        registerButton.setTitle("Register", for: .normal)
+        registerButton.setTitleColor(.white, for: .normal)
+        registerButton.backgroundColor = .systemBlue
+        registerButton.layer.cornerRadius = 16
+        registerButton.translatesAutoresizingMaskIntoConstraints = false
 
-            registerButton.addSubview(activityIndicator)
-            activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        }
+        registerButton.addSubview(activityIndicator)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+    }
 
     private func setupLayout() {
         NSLayoutConstraint.activate([

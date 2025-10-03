@@ -22,7 +22,7 @@ actor RoomService {
         let url = URLBuilder.shared.create(for: .rooms(.allRooms))
 
         do {
-            let data = try await NetworkManager.shared.request(url: url, method: .get)
+            let data = try await NetworkManager.shared.authenticatedRequest(url: url, method: .get)
 
             guard let data = data else {
                 throw RoomServiceError.unknown
