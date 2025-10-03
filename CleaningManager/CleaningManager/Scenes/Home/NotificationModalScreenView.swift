@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct NotificationModalScreenView: View {
-    @Environment(\.dismiss) private var dismiss
-    // @State private var hoursAndMinutes = Date()
     @State private var frequency = ["Daily", "Weekly", "Monthly"]
     @State private var selectedDate = Date()
     @State private var selectedFrequency = 0
     @State private var showAlert = false
     @State private var selectedWeekday = 2
     @State private var selectedDayOfMonth = 1
+    @State private var showDayOfMonthWarning = false
+    @Environment(\.dismiss)
+    private var dismiss
 
     var body: some View {
         ZStack {
@@ -31,6 +32,12 @@ struct NotificationModalScreenView: View {
                     }
                 } message: {
                     Text("Please allow us to access your iPhone notifications.")
+                }
+                .alert("Attention!", isPresented: $showDayOfMonthWarning) {
+                    Button("OK") {
+                    }
+                } message: {
+                    Text("Notification will arrive on the last day if the selected day doesn’t exist in the month")
                 }
         }
     }
@@ -107,6 +114,10 @@ struct NotificationModalScreenView: View {
                         ForEach(1...31, id: \.self) { day in
                             Button(action: {
                                 selectedDayOfMonth = day
+                                
+                                if selectedDayOfMonth >= 29 {
+                                    showDayOfMonthWarning = true
+                                }
                             })
                             {
                                 Text("\(day)")
@@ -180,10 +191,18 @@ struct NotificationModalScreenView: View {
                                     repeats: true
                                 )
                             case 2:
+                                let calendar = Calendar.current
+                                let year = calendar.component(.year, from: Date())
+                                let month = calendar.component(.month, from: Date())
+                                let date = calendar.date(from: DateComponents(year: year, month: month))!
+                                let range = calendar.range(of: .day, in: .month, for: date)!
+                                let lastDay = range.upperBound - 1
+                                
                                 var monthlyComponents = DateComponents()
                                 monthlyComponents.hour = timeComponents.hour
                                 monthlyComponents.minute = timeComponents.minute
-                                monthlyComponents.day = selectedDayOfMonth
+                                monthlyComponents.day = min(selectedDayOfMonth, lastDay)
+                                
                                 NotificationService.shared.dispatchNotification(
                                     identifier:
                                         "cleaning_reminder_monthly_\(selectedDayOfMonth)",
