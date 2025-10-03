@@ -54,9 +54,15 @@ actor NetworkManager {
         if let body {
             request.httpBody = try? encoder.encode(body)
         }
+        let headers: HTTPHeaders = [
+            .accept("application/json")
+        ]
 //        return AF.request(request).resume().data
         return try await withCheckedThrowingContinuation { continuation in
-            AF.request(request).responseData { response in
+            guard let request = ?URLConvertible else {
+                fatalError()
+            }
+            AF.request(request as! URLConvertible, headers: headers).responseData { response in
                 switch(response.result) {
                 case let .success(data):
                     continuation.resume(returning: data)

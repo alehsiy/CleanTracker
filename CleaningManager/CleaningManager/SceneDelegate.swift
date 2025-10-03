@@ -27,6 +27,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
+
+        Task {
+            let isAuthenticated = await AuthService.shared.isAuthenticated()
+
+            await MainActor.run {
+                if isAuthenticated {
+                    let homeVC = HomeViewController()
+                    let navController = UINavigationController(rootViewController: homeVC)
+                    window.rootViewController = navController
+                } else {
+                    let authVC = AuthViewController()
+                    window.rootViewController = authVC
+                }
+
+                window.makeKeyAndVisible()
+                self.window = window
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
