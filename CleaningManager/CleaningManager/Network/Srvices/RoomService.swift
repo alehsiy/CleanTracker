@@ -89,7 +89,8 @@ actor RoomService {
         do {
             let data = try await NetworkManager.shared.request(
                 url: url,
-                method: .patch
+                method: .patch,
+                body: updatedRoom
             )
 
             guard let data = data else {
@@ -112,6 +113,42 @@ actor RoomService {
 
         do {
             try await NetworkManager.shared.request(url: url, method: .delete)
+        } catch {
+            throw RoomServiceError.networkError(error)
+        }
+    }
+
+    func getRoomZones(id: String) async throws -> [Zone] {
+        let url = URLBuilder.shared.create(for: .rooms(.roomZones(id: id)))
+
+        do {
+            let data = try await NetworkManager.shared.request(url: url, method: .get)
+            guard let data = data else {
+                throw RoomServiceError.unknown
+            }
+            let zones = try await NetworkManager.shared.parseJSON(with: [Zone].self, data: data)
+            guard let zones = zones else {
+                throw RoomServiceError.decodingError
+            }
+            return zones
+        } catch {
+            throw RoomServiceError.networkError(error)
+        }
+    }
+
+    func createZone(id: String, name: String, icon: String, frequency: String) async throws -> NewZone {
+        let url = URLBuilder.shared.create(for: .rooms(.roomZones(id: id)))
+        let body = NewZone(name: name, icon: icon, frequency: Frequency(rawValue: frequency) ?? .daily, customIntervalDays: 0)
+        do {
+            let data = try await NetworkManager.shared.request(url: url, method: .post, body: body)
+            guard let data = data else {
+                throw RoomServiceError.unknown
+            }
+            let zone = try await NetworkManager.shared.parseJSON(with: NewZone.self, data: data)
+            guard let zone = zone else {
+                throw RoomServiceError.decodingError
+            }
+            return zone
         } catch {
             throw RoomServiceError.networkError(error)
         }

@@ -20,9 +20,9 @@ final class URLBuilder {
 
         var path: String {
             switch self {
-            case .rooms(path: let path): "\(path.path)"
+            case .rooms(path: let path): "rooms\(path.path)"
             case .zones(path: let path): "zones/\(path.path)"
-            case .stats(path: let path): "rooms/"
+            case .stats(path: let path): "rooms"
             case .auth(path: let path): "\(path.path)"
             }
         }
@@ -36,10 +36,10 @@ final class URLBuilder {
 
         var path: String {
             switch self {
-            case .restore(id: let id): "rooms/\(id)/restore"
-            case .allRooms: "rooms"
-            case .byId(id: let id): "rooms/\(id)"
-            case .roomZones(id: let id): "rooms/\(id)/zones"
+            case .restore(id: let id): "/\(id)/restore"
+            case .allRooms: ""
+            case .byId(id: let id): "/\(id)"
+            case .roomZones(id: let id): "/\(id)/zones"
             }
         }
     }
@@ -47,14 +47,14 @@ final class URLBuilder {
     enum Zones {
         case bulkClean
         case byid(id: String)
-        case clean
+        case clean(id: String)
         case due
 
         var path: String {
             switch self {
             case .bulkClean: "bulk-clean"
             case .byid(id: let id): "\(id)"
-            case .clean: "clean"
+            case .clean(id: let id): "\(id)/clean"
             case .due: "due"
             }
         }

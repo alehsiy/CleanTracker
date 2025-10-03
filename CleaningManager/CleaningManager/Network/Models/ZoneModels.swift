@@ -6,10 +6,6 @@
 //
 import Foundation
 
-//struct ZoneResponse: Codable {
-//    let zones: [Zone]
-//}
-
 struct Zone: Codable, Identifiable {
     let id: String
     let roomId: String
@@ -56,4 +52,8 @@ struct UpdateZone: Codable {
     let icon: String?
     let frequency: Frequency?
     let customIntervalDays: Int?
+}
+
+struct CleanZone: Encodable {
+    let cleanedAt: String
 }

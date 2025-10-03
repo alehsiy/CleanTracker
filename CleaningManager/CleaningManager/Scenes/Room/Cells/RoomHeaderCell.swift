@@ -10,11 +10,8 @@ import UIKit
 final class RoomHeaderCell: UICollectionViewCell {
     private let iconImageView = UIImageView()
     private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
     private let progressInfoLabel = UILabel()
     private let labelsView = UIStackView()
-
-    // TODO: Добавить UIImageView по макету
 
     static let reuseIdentifier = String(describing: RoomHeaderCell.self)
 
@@ -24,17 +21,14 @@ final class RoomHeaderCell: UICollectionViewCell {
         setupLayout()
     }
 
-    func configure(roomName: String, subtitle: String, image: UIImage?, progress: String) {
+    func configure(roomName: String, image: UIImage?, progress: String) {
         titleLabel.text = roomName
-        subtitleLabel.text = subtitle
         progressInfoLabel.text = progress
         if let image {
             iconImageView.image = image
         } else {
             iconImageView.image = UIImage(systemName: "home")
         }
-        iconImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        iconImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
     }
 
     @available(*, unavailable)
@@ -53,22 +47,14 @@ private extension RoomHeaderCell {
 
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         labelsView.translatesAutoresizingMaskIntoConstraints = false
 
-        iconImageView.contentMode = .scaleAspectFill
         iconImageView.contentMode = .scaleAspectFit
-
-        // TODO: Добавить картинку на фоне и плейсхолдер, если её нет
 
         titleLabel.font = UIFont.boldSystemFont(ofSize: 22)
 
-        subtitleLabel.font = UIFont.systemFont(ofSize: 16)
-        subtitleLabel.textColor = .gray
-
         progressInfoLabel.font = UIFont.systemFont(ofSize: 16)
         progressInfoLabel.textColor = .gray
-
 
         labelsView.axis = .vertical
         labelsView.alignment = .leading
@@ -89,7 +75,6 @@ private extension RoomHeaderCell {
     func addSubviews() {
         contentView.addSubview(iconImageView)
         labelsView.addArrangedSubview(titleLabel)
-        labelsView.addArrangedSubview(subtitleLabel)
         labelsView.addArrangedSubview(progressInfoLabel)
         contentView.addSubview(labelsView)
     }
