@@ -47,6 +47,49 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
+    func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleUserLogin),
+            name: .userDidLogin,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleUserLogout),
+            name: .userDidLogout,
+            object: nil
+        )
+    }
+
+    @objc private func handleUserLogin() {
+        switchToHomeScreen()
+    }
+
+    @objc private func handleUserLogout() {
+        switchToAuthScreen()
+    }
+
+    private func switchToHomeScreen() {
+        let homeVC = HomeViewController()
+        let navController = UINavigationController(rootViewController: homeVC)
+        switchRootViewController(to: navController)
+    }
+
+    private func switchToAuthScreen() {
+        let authVC = AuthViewController()
+        switchRootViewController(to: authVC)
+    }
+
+    private func switchRootViewController(to viewController: UIViewController) {
+        guard let window = self.window else { return }
+
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            window.rootViewController = viewController
+        }, completion: nil)
+    }
+
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
@@ -74,4 +117,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
+}
+
+extension Notification.Name {
+    static let userDidLogout = Notification.Name("userDidLogout")
+    static let userDidLogin = Notification.Name("userDidLogin")
 }

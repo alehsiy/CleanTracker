@@ -53,6 +53,7 @@ actor AuthService {
                 await MainActor.run {
                     completion(.success(authResponse))
                 }
+                NotificationCenter.default.post(name: .userDidLogin, object: nil)
             } catch let error as AFError {
                 if let statusCode = error.responseCode, statusCode == 401 {
                     await MainActor.run {
@@ -111,6 +112,7 @@ actor AuthService {
                 await MainActor.run {
                     completion(.success(authResponse))
                 }
+                NotificationCenter.default.post(name: .userDidLogin, object: nil)
             } catch let error as AFError {
                 if let statusCode = error.responseCode, statusCode == 400 {
                     await MainActor.run {

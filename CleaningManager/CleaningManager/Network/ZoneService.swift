@@ -22,7 +22,7 @@ actor ZoneService {
         let url = URLBuilder.shared.create(for: .zones(.byid(id: id)))
 
         do {
-            try await NetworkManager.shared.request(url: url, method: .delete)
+            try await NetworkManager.shared.authenticatedRequest(url: url, method: .delete)
         } catch {
             throw ZoneServiceError.networkError(error)
         }
@@ -37,7 +37,7 @@ actor ZoneService {
         let url = URLBuilder.shared.create(for: .zones(.clean(id: id)))
         
         do {
-            try await NetworkManager.shared.request(url: url, method: .post, body: CleanZone(cleanedAt: currentDate))
+            try await NetworkManager.shared.authenticatedRequest(url: url, method: .post, body: CleanZone(cleanedAt: currentDate))
         } catch {
             throw ZoneServiceError.networkError(error)
         }
