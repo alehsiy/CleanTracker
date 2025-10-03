@@ -258,6 +258,9 @@ private extension RoomViewController {
             self?.showItems(roomId: self?.room?.id ?? "")
             self?.collectionView.reloadData()
         }
+        modalVC.onDeletingRoom = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
         present(modalVC, animated: true, completion: nil)
         print("Settings button tapped")
     }

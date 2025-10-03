@@ -23,7 +23,9 @@ final class EntitySettingsModalScreen: UIViewController {
     private let descriptionForRoomItemsStack = UILabel()
     private let nameOfItemTextField = UITextField()
     private let confirmChangesButton = UIButton()
+    private let deleteRoomButton = UIButton()
     var onAddingItem: (() -> Void)?
+    var onDeletingRoom: (() -> Void)?
 
     private let tableWithRoomItems = UITableView(frame: .zero, style: .plain)
     
@@ -86,6 +88,18 @@ final class EntitySettingsModalScreen: UIViewController {
         confirmChangesButton.layer.cornerRadius = 16
         confirmChangesButton.backgroundColor = .systemBlue
         confirmChangesButton.translatesAutoresizingMaskIntoConstraints = false
+
+        containerView.addSubview(deleteRoomButton)
+        deleteRoomButton.addTarget(
+            self,
+            action: #selector(deleteRoomButtonPressed),
+            for: .touchUpInside
+        )
+        deleteRoomButton.setTitle("Delete room", for: .normal)
+        deleteRoomButton.setTitleColor(.white, for: .normal)
+        deleteRoomButton.layer.cornerRadius = 16
+        deleteRoomButton.backgroundColor = .systemRed
+        deleteRoomButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupLayout() {
@@ -110,6 +124,20 @@ final class EntitySettingsModalScreen: UIViewController {
         confirmChangesButton.heightAnchor.constraint(
             equalToConstant: 40),
         confirmChangesButton.bottomAnchor.constraint(
+            equalTo: deleteRoomButton.topAnchor,
+            constant: -16),
+        deleteRoomButton.topAnchor.constraint(
+            equalTo: confirmChangesButton.bottomAnchor,
+            constant: 16),
+        deleteRoomButton.leadingAnchor.constraint(
+            equalTo: containerView.leadingAnchor,
+            constant: 16),
+        deleteRoomButton.trailingAnchor.constraint(
+            equalTo: containerView.trailingAnchor,
+            constant: -16),
+        deleteRoomButton.heightAnchor.constraint(
+            equalToConstant: 40),
+        deleteRoomButton.bottomAnchor.constraint(
             equalTo: containerView.bottomAnchor,
             constant: -16)
         ])
@@ -377,5 +405,45 @@ private extension EntitySettingsModalScreen {
         }
         dismiss(animated: true, completion: nil)
         print("Введено: \(itemName), Выбрана иконка: \(itemIcon), Выбрана")
+    }
+
+    @objc
+    private func deleteRoomButtonPressed() {
+        guard let id = roomId else {
+            // TODO: Сделать алёрт
+            return
+        }
+        let alert = UIAlertController(
+            title: "Confirm delete room",
+            message: "Are you sure?",
+            preferredStyle: .alert)
+
+        alert.addAction(
+            UIAlertAction(
+                title: "No",
+                style: .cancel,
+                handler: { _ in
+                    print("user tap NO")
+                }
+            )
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: "Yes",
+                style: .default,
+                handler: { [weak self] _ in
+                    Task {
+                        try await RoomService.shared.deleteRoom(id: id)
+                        self?.onDeletingRoom?()
+                        self?.dismiss(animated: true)
+                    }
+                    print("user tap Yes")
+                }
+            )
+        )
+
+        present(alert, animated: true, completion: nil)
+        print("Удалена комната")
     }
 }
