@@ -101,7 +101,16 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
         )
         notificationButton.tintColor = .systemBlue
 
+        let profileButton = UIBarButtonItem(
+            image: UIImage(systemName: "person.crop.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(didTapProfileButton)
+        )
+        notificationButton.tintColor = .systemBlue
+
         navigationItem.rightBarButtonItem = notificationButton
+        navigationItem.leftBarButtonItem = profileButton
 
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -246,12 +255,32 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
     }
 
     @objc
+    private func didTapProfileButton() {
+        let modalVC = CleaningManager.ProfileModalScreen()
+        modalVC.modalPresentationStyle = .overFullScreen
+        modalVC.modalTransitionStyle = .crossDissolve
+        modalVC.onSuccess = { [weak self] in
+            self?.navigateToAuth()
+        }
+        present(modalVC, animated: true, completion: nil)
+    }
+
+    @objc
     private func didTapAddRoomButton() {
         let modalVC = CleaningManager.AddRoomModalScreen()
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
         modalVC.delegate = self
         present(modalVC, animated: true, completion: nil)
+    }
+
+    private func navigateToAuth() {
+        let authVC = AuthViewController()
+        let navController = UINavigationController(rootViewController: authVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true) { [weak self] in
+            self?.navigationController?.popToRootViewController(animated: false)
+        }
     }
 }
 
@@ -295,5 +324,11 @@ extension HomeViewController: AddRoomModalScreenDelegate {
             let nav = self.navigationController
             nav?.pushViewController(roomVC, animated: true)
         }
+    }
+}
+
+extension HomeViewController: ProfileModalScreenDelegate {
+    func ProfileModalScreen(_ controller: ProfileModalScreen, name: String, email: String) {
+        // если успеется будет редактирование профиля
     }
 }

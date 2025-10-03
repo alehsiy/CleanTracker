@@ -22,7 +22,7 @@ actor RoomService {
         let url = URLBuilder.shared.create(for: .rooms(.allRooms))
 
         do {
-            let data = try await NetworkManager.shared.request(url: url, method: .get)
+            let data = try await NetworkManager.shared.authenticatedRequest(url: url, method: .get)
 
             guard let data = data else {
                 throw RoomServiceError.unknown
@@ -39,7 +39,7 @@ actor RoomService {
         let url = URLBuilder.shared.create(for: .rooms(.byId(id: id)))
 
         do {
-            let data = try await NetworkManager.shared.request(url: url, method: .get)
+            let data = try await NetworkManager.shared.authenticatedRequest(url: url, method: .get)
 
             guard let data = data else {
                 throw RoomServiceError.unknown
@@ -61,7 +61,7 @@ actor RoomService {
         let newRoom = NewRoom(name: name, icon: icon)
 
         do {
-            let data = try await NetworkManager.shared.request(
+            let data = try await NetworkManager.shared.authenticatedRequest(
                 url: url,
                 method: .post,
                 body: newRoom
@@ -87,7 +87,7 @@ actor RoomService {
         let updatedRoom = UpdateRoom(name: name, icon: icon)
 
         do {
-            let data = try await NetworkManager.shared.request(
+            let data = try await NetworkManager.shared.authenticatedRequest(
                 url: url,
                 method: .patch,
                 body: updatedRoom
@@ -112,7 +112,7 @@ actor RoomService {
         let url = URLBuilder.shared.create(for: .rooms(.byId(id: id)))
 
         do {
-            try await NetworkManager.shared.request(url: url, method: .delete)
+            try await NetworkManager.shared.authenticatedRequest(url: url, method: .delete)
         } catch {
             throw RoomServiceError.networkError(error)
         }
@@ -122,7 +122,7 @@ actor RoomService {
         let url = URLBuilder.shared.create(for: .rooms(.roomZones(id: id)))
 
         do {
-            let data = try await NetworkManager.shared.request(url: url, method: .get)
+            let data = try await NetworkManager.shared.authenticatedRequest(url: url, method: .get)
             guard let data = data else {
                 throw RoomServiceError.unknown
             }
@@ -140,7 +140,7 @@ actor RoomService {
         let url = URLBuilder.shared.create(for: .rooms(.roomZones(id: id)))
         let body = NewZone(name: name, icon: icon, frequency: Frequency(rawValue: frequency) ?? .daily, customIntervalDays: 0)
         do {
-            let data = try await NetworkManager.shared.request(url: url, method: .post, body: body)
+            let data = try await NetworkManager.shared.authenticatedRequest(url: url, method: .post, body: body)
             guard let data = data else {
                 throw RoomServiceError.unknown
             }

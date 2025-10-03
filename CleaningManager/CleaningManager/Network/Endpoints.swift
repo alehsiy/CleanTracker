@@ -16,12 +16,14 @@ final class URLBuilder {
         case rooms(_ path: Rooms)
         case zones(_ path: Zones)
         case stats(_ path: Stats)
+        case auth(_ path: Auth)
 
         var path: String {
             switch self {
             case .rooms(path: let path): "rooms\(path.path)"
             case .zones(path: let path): "zones/\(path.path)"
             case .stats(path: let path): "rooms"
+            case .auth(path: let path): "\(path.path)"
             }
         }
     }
@@ -60,6 +62,22 @@ final class URLBuilder {
 
     enum Stats {
         case overview
+    }
+
+    enum Auth {
+        case login
+        case register
+        case refresh
+        case me
+
+        var path: String {
+            switch self {
+            case .login: "login"
+            case .register: "register"
+            case .refresh: "refresh"
+            case .me: "me"
+            }
+        }
     }
 
     func create(for endpoint: Endpoint) -> URL {
