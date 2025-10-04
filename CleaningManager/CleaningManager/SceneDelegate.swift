@@ -63,11 +63,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
     }
 
-    @objc private func handleUserLogin() {
+    @objc
+    private func handleUserLogin() {
         switchToHomeScreen()
     }
 
-    @objc private func handleUserLogout() {
+    @objc
+    private func handleUserLogout() {
         switchToAuthScreen()
     }
 
