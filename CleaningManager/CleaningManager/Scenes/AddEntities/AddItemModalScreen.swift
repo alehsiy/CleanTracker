@@ -16,7 +16,7 @@ protocol AddItemModalScreenDelegate: AnyObject {
     )
 }
 
-final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
+final class AddItemModalScreen: UIViewController, UITextFieldDelegate, ModalScreenHandler {
     
     weak var delegate: AddItemModalScreenDelegate?
     var selectedIcon: String?
@@ -64,7 +64,7 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
             for: .touchUpInside
         )
         closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        closeButton.tintColor = .label
+        closeButton.tintColor = .systemBlue
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(descriptionForIcons)
@@ -74,6 +74,13 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
         descriptionForIcons.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(iconsButtonsStackView)
+        
+        containerView.addSubview(moreEmojisButton)
+            moreEmojisButton.addTarget(
+                self,
+                action: #selector(showEmojiPicker),
+                for: .touchUpInside
+            )
         
         containerView.addSubview(descriptionForTextField)
         descriptionForTextField.font = .systemFont(ofSize: 14)
@@ -169,7 +176,7 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
         NSLayoutConstraint.activate([
             descriptionForIcons.topAnchor.constraint(
                 equalTo: titleLabel.bottomAnchor,
-                constant: 16),
+                constant: 8),
             descriptionForIcons.leadingAnchor.constraint(
                 equalTo: containerView.leadingAnchor,
                 constant: 16),
@@ -193,9 +200,20 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
     
     private func setupNameOfItemField() {
         NSLayoutConstraint.activate([
-        descriptionForTextField.topAnchor.constraint(
+        moreEmojisButton.topAnchor.constraint(
             equalTo: iconsButtonsStackView.bottomAnchor,
-            constant: 16),
+            constant: 8),
+        moreEmojisButton.centerXAnchor.constraint(
+            equalTo: containerView.centerXAnchor,
+            constant: 0),
+        moreEmojisButton.widthAnchor.constraint(
+            equalToConstant: 120),
+        moreEmojisButton.heightAnchor.constraint(
+            equalToConstant: 38),
+            
+        descriptionForTextField.topAnchor.constraint(
+            equalTo: moreEmojisButton.bottomAnchor,
+            constant: 6),
         descriptionForTextField.leadingAnchor.constraint(
             equalTo: containerView.leadingAnchor,
             constant: 16),
@@ -250,19 +268,21 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
     private func makeButtonForStack(title: String) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
         button.layer.cornerRadius = 8
         button.backgroundColor = .systemGray6
         button.widthAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
+        button.layer.borderWidth = 0
         return button
     }
     
-    private lazy var iconsButtonsStackView: UIStackView = {
+    internal lazy var iconsButtonsStackView: UIStackView = {
         let kitchen = makeButtonForStack(title: "🍽️")
         let bathroom = makeButtonForStack(title: "🛁")
         let bed = makeButtonForStack(title: "🪟")
         let wardrobe = makeButtonForStack(title: "🛏️")
-        let garden = makeButtonForStack(title: "...")
+        let garden = makeButtonForStack(title: "🥬")
         
         let stack = UIStackView(arrangedSubviews: [
             kitchen, bathroom, bed, wardrobe, garden
@@ -312,15 +332,28 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
         return stack
     }()
     
+    internal let moreEmojisButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("More Emojis", for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.layer.cornerRadius = 8
+        button.backgroundColor = .systemGray6
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+}
+
+extension AddItemModalScreen {
+    
     @objc
-    private func iconTapped(_ sender: UIButton) {
-        for button in iconsButtonsStackView.arrangedSubviews.compactMap({
-            $0 as? UIButton
-        }) {
-            button.backgroundColor = .systemGray6
-        }
-        sender.backgroundColor = .lightGray
-        selectedIcon = sender.currentTitle
+    internal func showEmojiPicker() {
+        shared_showEmojiPicker()
+    }
+    
+    @objc
+    internal func iconTapped(_ sender: UIButton) {
+        shared_iconTapped(sender)
     }
     
     @objc
@@ -329,9 +362,12 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
             $0 as? UIButton
         }) {
             button.backgroundColor = .systemGray6
+            button.layer.borderWidth = 0
         }
-        sender.backgroundColor = .lightGray
+        sender.layer.borderWidth = 2
+        sender.layer.borderColor = UIColor.systemBlue.cgColor
         selectedFrequency = sender.currentTitle
+        
     }
     
     @objc
@@ -341,7 +377,6 @@ final class AddItemModalScreen: UIViewController, UITextFieldDelegate {
     
     @objc
     private func addItemButtonPressed() {
-        
         let itemName = nameOfItemTextField.text ?? ""
         let itemIcon = selectedIcon ?? ""
         let itemFrequency = selectedFrequency ?? ""

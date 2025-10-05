@@ -253,6 +253,8 @@ private extension RoomViewController {
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
         modalVC.roomId = room?.id
+        modalVC.roomName = room?.name
+        modalVC.roomIcon = room?.icon
         modalVC.onAddingItem = { [weak self] in
             self?.showItems(roomId: self?.room?.id ?? "")
         }
