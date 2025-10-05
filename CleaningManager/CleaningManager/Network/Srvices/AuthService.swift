@@ -50,7 +50,7 @@ actor AuthService {
                 try await keychainService.saveAccessToken(authResponse.access_token)
                 try await keychainService.saveRefreshToken(authResponse.refresh_token)
                 try await keychainService.saveUserData(
-                    name: authResponse.user.name,
+                    username: authResponse.user.username,
                     email: authResponse.user.email,
                     userId: authResponse.user.id
                 )
@@ -114,7 +114,7 @@ actor AuthService {
                 try await keychainService.saveAccessToken(authResponse.access_token)
                 try await keychainService.saveRefreshToken(authResponse.refresh_token)
                 try await keychainService.saveUserData(
-                    name: authResponse.user.name,
+                    username: authResponse.user.username,
                     email: authResponse.user.email,
                     userId: authResponse.user.id
                 )
