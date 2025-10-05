@@ -49,6 +49,11 @@ actor AuthService {
 
                 try await keychainService.saveAccessToken(authResponse.access_token)
                 try await keychainService.saveRefreshToken(authResponse.refresh_token)
+                try await keychainService.saveUserData(
+                    name: authResponse.user.name,
+                    email: authResponse.user.email,
+                    userId: authResponse.user.id
+                )
 
                 await MainActor.run {
                     completion(.success(authResponse))
@@ -108,6 +113,11 @@ actor AuthService {
 
                 try await keychainService.saveAccessToken(authResponse.access_token)
                 try await keychainService.saveRefreshToken(authResponse.refresh_token)
+                try await keychainService.saveUserData(
+                    name: authResponse.user.name,
+                    email: authResponse.user.email,
+                    userId: authResponse.user.id
+                )
 
                 await MainActor.run {
                     completion(.success(authResponse))

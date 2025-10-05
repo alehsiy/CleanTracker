@@ -14,7 +14,7 @@ class RoomTableViewCell: UITableViewCell {
 
     private let roomNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.font = .systemFont(ofSize: 18, weight: .semibold)
         label.textColor = .label
         return label
     }()

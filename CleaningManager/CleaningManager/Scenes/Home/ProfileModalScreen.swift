@@ -21,9 +21,10 @@ final class ProfileModalScreen: UIViewController {
     private let containerView = UIView()
     private let titleLabel = UILabel()
     private let closeButton = UIButton()
-    private let nameLabel = UILabel()
-    private let emailLabel = UILabel()
     private let logoutButton = UIButton()
+    private let userInfoStackView = UIStackView()
+    private let userNameLabel = UILabel()
+    private let userEmailLabel = UILabel()
 
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .medium)
@@ -33,6 +34,7 @@ final class ProfileModalScreen: UIViewController {
 
     var onSuccess: (() -> Void)?
     private let authService = AuthService.shared
+    private let keychainService = KeychainService.shared
     private var isLoading = false {
         didSet {
             logoutButton.isEnabled = !isLoading
@@ -50,6 +52,7 @@ final class ProfileModalScreen: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gray.withAlphaComponent(0.5)
 
+        loadUserData()
         setupUI()
         setupLayout()
     }
@@ -65,7 +68,6 @@ final class ProfileModalScreen: UIViewController {
         titleLabel.font = .boldSystemFont(ofSize: 16)
         titleLabel.textAlignment = .center
         titleLabel.text = "Profile"
-        titleLabel.textColor = .systemBlue
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.addSubview(closeButton)
@@ -78,6 +80,14 @@ final class ProfileModalScreen: UIViewController {
         closeButton.tintColor = .systemBlue
         closeButton.translatesAutoresizingMaskIntoConstraints = false
 
+        containerView.addSubview(userInfoStackView)
+        userInfoStackView.axis = .vertical
+        userInfoStackView.spacing = 14
+        userInfoStackView.alignment = .leading
+        userInfoStackView.translatesAutoresizingMaskIntoConstraints = false
+        userInfoStackView.addArrangedSubview(userNameLabel)
+        userInfoStackView.addArrangedSubview(userEmailLabel)
+
         containerView.addSubview(logoutButton)
         logoutButton.addTarget(
             self,
@@ -89,7 +99,6 @@ final class ProfileModalScreen: UIViewController {
         logoutButton.backgroundColor = .systemBlue
         logoutButton.layer.cornerRadius = 16
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
-
         logoutButton.addSubview(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -110,7 +119,11 @@ final class ProfileModalScreen: UIViewController {
         closeButton.widthAnchor.constraint(equalToConstant: 16),
         closeButton.heightAnchor.constraint(equalToConstant: 16),
 
-        logoutButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+        userInfoStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
+        userInfoStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+        userInfoStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+
+        logoutButton.topAnchor.constraint(equalTo: userInfoStackView.bottomAnchor, constant: 16),
         logoutButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
         logoutButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
         logoutButton.heightAnchor.constraint(equalToConstant: 40),
@@ -122,6 +135,62 @@ final class ProfileModalScreen: UIViewController {
     }
 
     // MARK: - Actions
+    private func loadUserData() {
+        Task {
+            let userData = await keychainService.getUserData()
+
+            await MainActor.run {
+                updateUserInterface(name: userData.name, email: userData.email ?? "")
+            }
+        }
+    }
+
+    private func updateUserInterface(name: String?, email: String) {
+        let nameAttributedString = NSMutableAttributedString()
+        let emailAttributedString = NSMutableAttributedString()
+
+        let namePrefix = NSAttributedString(
+            string: "Name: ",
+            attributes: [
+                .foregroundColor: UIColor.secondaryLabel,
+                .font: UIFont.systemFont(ofSize: 16, weight: .regular)
+            ]
+        )
+
+        let nameValue = NSAttributedString(
+            string: name?.isEmpty == false ? name! : email,
+            attributes: [
+                .foregroundColor: UIColor.label,
+                .font: UIFont.systemFont(ofSize: 16, weight: .regular)
+            ]
+        )
+
+        nameAttributedString.append(namePrefix)
+        nameAttributedString.append(nameValue)
+
+        let emailPrefix = NSAttributedString(
+            string: "Email: ",
+            attributes: [
+                .foregroundColor: UIColor.secondaryLabel,
+                .font: UIFont.systemFont(ofSize: 16, weight: .regular)
+            ]
+        )
+
+        let emailValue = NSAttributedString(
+            string: email.isEmpty == false ? email : "Not specified",
+            attributes: [
+                .foregroundColor: UIColor.label,
+                .font: UIFont.systemFont(ofSize: 16, weight: .regular)
+            ]
+        )
+
+        emailAttributedString.append(emailPrefix)
+        emailAttributedString.append(emailValue)
+
+        userNameLabel.attributedText = nameAttributedString
+        userEmailLabel.attributedText = emailAttributedString
+    }
+
     @objc
     private func closePressed() {
         dismiss(animated: true)
