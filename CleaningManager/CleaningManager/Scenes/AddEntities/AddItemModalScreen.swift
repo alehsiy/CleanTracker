@@ -379,7 +379,7 @@ extension AddItemModalScreen {
     private func addItemButtonPressed() {
         let itemName = nameOfItemTextField.text ?? ""
         let itemIcon = selectedIcon ?? ""
-        let itemFrequency = selectedFrequency ?? ""
+        let itemFrequency = selectedFrequency?.lowercased() ?? ""
         delegate?.AddItemModalScreen(
             self,
             didEnterName: itemName,
