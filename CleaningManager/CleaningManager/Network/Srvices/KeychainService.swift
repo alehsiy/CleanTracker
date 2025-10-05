@@ -38,8 +38,8 @@ actor KeychainService {
     }
 
     // MARK: - User Data Methods
-    func saveUserData(name: String?, email: String, userId: String) async throws {
-        if let name = name, !name.isEmpty {
+    func saveUserData(username: String?, email: String, userId: String) async throws {
+        if let name = username, !name.isEmpty {
             try save(name, forKey: userNameKey)
         }
         try save(email, forKey: userEmailKey)
