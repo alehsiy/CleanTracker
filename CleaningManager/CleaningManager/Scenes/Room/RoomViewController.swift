@@ -34,7 +34,7 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
     private let addItemButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Add item", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
         button.tintColor = .white
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 16
@@ -103,7 +103,7 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
             ) as! RoomHeaderCell
             // swiftlint:enable force_cast
             if let room {
-                if let zones = room.totalZones, zones > 0 {
+                if room.totalZones > 0 {
                     cell.configure(
                         roomName: room.name,
                         image: room.icon.asImage(),

@@ -54,8 +54,8 @@ class ProgressBlock: UIView {
 
             homeImageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             homeImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: -15),
-            homeImageView.widthAnchor.constraint(equalToConstant: 30),
-            homeImageView.heightAnchor.constraint(equalToConstant: 30),
+            homeImageView.widthAnchor.constraint(equalToConstant: 34),
+            homeImageView.heightAnchor.constraint(equalToConstant: 34),
 
             percentageLabel.topAnchor.constraint(equalTo: homeImageView.bottomAnchor, constant: 60),
             percentageLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
@@ -67,14 +67,14 @@ class ProgressBlock: UIView {
 
     private func setupLayers() {
         trackLayer.strokeColor = UIColor.systemGray5.cgColor
-        trackLayer.lineWidth = 10
+        trackLayer.lineWidth = 14
         trackLayer.fillColor = UIColor.clear.cgColor
         trackLayer.lineCap = .round
         containerView.layer.addSublayer(trackLayer)
 
         // Progress layer (заполняемая часть)
         progressLayer.strokeColor = UIColor.systemBlue.cgColor
-        progressLayer.lineWidth = 10
+        progressLayer.lineWidth = 14
         progressLayer.fillColor = UIColor.clear.cgColor
         progressLayer.lineCap = .round
         progressLayer.strokeEnd = 0
@@ -110,7 +110,19 @@ class ProgressBlock: UIView {
     func updateProgress(_ value: Float) {
         let progressValue = max(0, min(value, 1.0))
         let percentage = Int(progressValue * 100)
-        percentageLabel.text = "\(percentage)% done"
+        UIView.transition(with: percentageLabel, duration: 0.4, options: .transitionCrossDissolve) {
+            self.percentageLabel.text = "\(percentage)% done"
+        }
+
+        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        animation.fromValue = progressLayer.strokeEnd
+        animation.toValue = CGFloat(progressValue)
+        animation.duration = 1.6
+        animation.timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.1, 0.25, 1.0)
+        animation.fillMode = .forwards
+        animation.isRemovedOnCompletion = false
+
         progressLayer.strokeEnd = CGFloat(progressValue)
+        progressLayer.add(animation, forKey: "progressAnimation")
     }
 }
