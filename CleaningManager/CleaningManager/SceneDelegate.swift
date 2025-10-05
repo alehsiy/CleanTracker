@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -20,31 +21,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         let window = UIWindow(windowScene: scene)
-        self.window = window
         
-        let homeViewController = HomeViewController()
-        let navigationController = UINavigationController(rootViewController: homeViewController)
-
-        window.rootViewController = navigationController
+        let launchView = CustomLaunchScreenView()
+        let hostingController = UIHostingController(rootView: launchView)
+        window.rootViewController = hostingController
         window.makeKeyAndVisible()
 
-        Task {
-            let isAuthenticated = await AuthService.shared.isAuthenticated()
+        self.window = window
 
-            await MainActor.run {
-                if isAuthenticated {
-                    let homeVC = HomeViewController()
-                    let navController = UINavigationController(rootViewController: homeVC)
-                    window.rootViewController = navController
-                } else {
-                    let authVC = AuthViewController()
-                    window.rootViewController = authVC
-                }
-
-                window.makeKeyAndVisible()
-                self.window = window
-            }
-        }
+        setupNotifications()
     }
 
     func setupNotifications() {
