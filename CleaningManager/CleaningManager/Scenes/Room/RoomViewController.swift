@@ -44,7 +44,7 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        showItems(roomId: room!.id)
+        showItems(roomId: roomId!)
         view.backgroundColor = UIColor(white: 0.97, alpha: 1)
 
         setupAddItemButton()
@@ -151,6 +151,7 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
             cell.itemId = zones[indexPath.item].id
             cell.onCleanItem = { [weak self] in
                 self?.showItems(roomId: self?.room?.id ?? "")
+                self?.collectionView.reloadData()
             }
             return cell
         }
@@ -253,8 +254,14 @@ private extension RoomViewController {
         modalVC.modalPresentationStyle = .overFullScreen
         modalVC.modalTransitionStyle = .crossDissolve
         modalVC.roomId = room?.id
+        modalVC.roomName = room?.name
+        modalVC.roomIcon = room?.icon
         modalVC.onAddingItem = { [weak self] in
             self?.showItems(roomId: self?.room?.id ?? "")
+            self?.collectionView.reloadData()
+        }
+        modalVC.onDeletingRoom = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
         }
         present(modalVC, animated: true, completion: nil)
         print("Settings button tapped")

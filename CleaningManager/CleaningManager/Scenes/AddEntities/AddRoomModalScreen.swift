@@ -11,11 +11,12 @@ protocol AddRoomModalScreenDelegate: AnyObject {
     func AddRoomModalScreen(
         _ controller: AddRoomModalScreen,
         didEnterName name: String,
-        icon: String
+        icon: String,
+        roomId: String
     )
 }
 
-final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
+final class AddRoomModalScreen: UIViewController, UITextFieldDelegate, ModalScreenHandler  {
     
     weak var delegate: AddRoomModalScreenDelegate?
     var selectedIcon: String?
@@ -59,7 +60,7 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
             for: .touchUpInside
         )
         closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        closeButton.tintColor = .label
+        closeButton.tintColor = .systemBlue
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(descriptionForIcons)
@@ -69,6 +70,13 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         descriptionForIcons.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(iconsButtonsStackView)
+        
+        containerView.addSubview(moreEmojisButton)
+            moreEmojisButton.addTarget(
+                self,
+                action: #selector(showEmojiPicker),
+                for: .touchUpInside
+            )
         
         containerView.addSubview(descriptionForTextField)
         descriptionForTextField.font = .systemFont(ofSize: 14)
@@ -104,9 +112,6 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         ).isActive = true
         containerView.widthAnchor.constraint(
             equalToConstant: 300
-        ).isActive = true
-        containerView.heightAnchor.constraint(
-            equalToConstant: 260
         ).isActive = true
         
         titleLabel.centerXAnchor.constraint(
@@ -150,6 +155,10 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         addRoomButton.heightAnchor.constraint(
             equalToConstant: 40
         ).isActive = true
+        addRoomButton.bottomAnchor.constraint(
+            equalTo: containerView.bottomAnchor,
+            constant: -16
+        ).isActive = true
         
         closeButton.topAnchor.constraint(
             equalTo: containerView.topAnchor,
@@ -166,7 +175,7 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
     private func setupDescriptionsForElements() {
         descriptionForIcons.topAnchor.constraint(
             equalTo: titleLabel.bottomAnchor,
-            constant: 16
+            constant: 8
         ).isActive = true
         descriptionForIcons.leadingAnchor.constraint(
             equalTo: containerView.leadingAnchor,
@@ -177,9 +186,20 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
             constant: -16
         ).isActive = true
         
-        descriptionForTextField.topAnchor.constraint(
+        moreEmojisButton.topAnchor.constraint(
             equalTo: iconsButtonsStackView.bottomAnchor,
-            constant: 16
+            constant: 8).isActive = true
+        moreEmojisButton.centerXAnchor.constraint(
+            equalTo: containerView.centerXAnchor,
+            constant: 0).isActive = true
+        moreEmojisButton.widthAnchor.constraint(
+            equalToConstant: 120).isActive = true
+        moreEmojisButton.heightAnchor.constraint(
+            equalToConstant: 38).isActive = true
+        
+        descriptionForTextField.topAnchor.constraint(
+            equalTo: moreEmojisButton.bottomAnchor,
+            constant: 8
         ).isActive = true
         descriptionForTextField.leadingAnchor.constraint(
             equalTo: containerView.leadingAnchor,
@@ -218,13 +238,15 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
     private func makeIconButton(title: String) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 28)
         button.layer.cornerRadius = 8
+        button.layer.borderWidth = 0
         button.backgroundColor = .systemGray6
         return button
     }
     
-    private lazy var iconsButtonsStackView: UIStackView = {
+    lazy var iconsButtonsStackView: UIStackView = {
         let kitchen = makeIconButton(title: "🍽️")
         let bathroom = makeIconButton(title: "🚿")
         let bed = makeIconButton(title: "🛏️")
@@ -252,15 +274,25 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         return stack
     }()
     
+    internal let moreEmojisButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("More Emojis", for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.layer.cornerRadius = 8
+        button.backgroundColor = .systemGray6
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     @objc
-    private func iconTapped(_ sender: UIButton) {
-        for button in iconsButtonsStackView.arrangedSubviews.compactMap({
-            $0 as? UIButton
-        }) {
-            button.backgroundColor = .systemGray6
-        }
-        sender.backgroundColor = .lightGray
-        selectedIcon = sender.currentTitle
+    internal func showEmojiPicker() {
+        shared_showEmojiPicker()
+    }
+    
+    @objc
+    internal func iconTapped(_ sender: UIButton) {
+        shared_iconTapped(sender)
     }
     
     @objc
@@ -273,14 +305,20 @@ final class AddRoomModalScreen: UIViewController, UITextFieldDelegate  {
         
         let roomName = nameOfRoomTextField.text ?? ""
         let roomIcon = selectedIcon ?? ""
+        var roomId: String?
         Task {
-            try await RoomService.shared.createRoom(name: roomName, icon: roomIcon)
+            roomId = try await RoomService.shared.createRoom(name: roomName, icon: roomIcon).id
+            if let roomId {
+                delegate?.AddRoomModalScreen(
+                    self,
+                    didEnterName: roomName,
+                    icon: roomIcon,
+                    roomId: roomId
+                )
+            } else {
+                dismiss(animated: true)
+            }
         }
-        delegate?.AddRoomModalScreen(
-            self,
-            didEnterName: roomName,
-            icon: roomIcon
-        )
         print("Введено: \(roomName), Выбрана иконка: \(roomIcon)")
     }
 }
