@@ -9,6 +9,7 @@ import UIKit
 final class AuthViewController: UIViewController {
 
     private let containerView = UIView()
+    private let logoImageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let loginButton = UIButton()
@@ -30,18 +31,21 @@ final class AuthViewController: UIViewController {
         containerView.layer.cornerRadius = 16
         containerView.translatesAutoresizingMaskIntoConstraints = false
 
+        containerView.addSubview(logoImageView)
+        logoImageView.image = UIImage(named: "father-daughter-cleaning-apartment-together")
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+
         containerView.addSubview(titleLabel)
         titleLabel.font = .boldSystemFont(ofSize: 32)
         titleLabel.textAlignment = .center
         titleLabel.text = "Clean Quest"
-        titleLabel.textColor = .systemBlue
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.addSubview(subtitleLabel)
         subtitleLabel.font = .boldSystemFont(ofSize: 18)
         subtitleLabel.textAlignment = .center
         subtitleLabel.text = "Manage your cleaning tasks"
-        subtitleLabel.textColor = .systemBlue
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.addSubview(loginButton)
@@ -77,8 +81,15 @@ final class AuthViewController: UIViewController {
             containerView.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 16),
             containerView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
 
+            logoImageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            logoImageView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: 300),
+            logoImageView.heightAnchor.constraint(equalToConstant: 300),
+
+            titleLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 16),
             titleLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 32),
+            titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: containerView.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: containerView.trailingAnchor, constant: -16),
 
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             subtitleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
