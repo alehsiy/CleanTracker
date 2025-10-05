@@ -20,9 +20,9 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
     private let addRoomButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Add room", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        button.tintColor = .label
-        button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+        button.tintColor = .white
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 16
         button.layer.cornerCurve = .continuous
         return button
@@ -30,14 +30,17 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setupNavigationBar()
-        setup()
-
         view.backgroundColor = .white
 
+        setupNavigationBar()
         loadRooms()
+        setup()
         updateEmptyState()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadRooms()
     }
 
     private func setup() {
@@ -57,6 +60,7 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
                     self.rooms = rooms
                     self.tableView.reloadData()
                     self.updateEmptyState()
+                    self.updateProgressBar()
                 }
             } catch {
                 await MainActor.run {
@@ -64,6 +68,13 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
                 }
             }
         }
+    }
+
+    private func updateProgressBar() {
+        let totalProgress = calculateTotalProgress()
+
+        print("🔄 Updating progress bar to: \(totalProgress)")
+        progressBar.updateProgress(totalProgress)
     }
 
     private func handleError(_ error: Error) {
@@ -136,9 +147,6 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
             progressBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             progressBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-
-        let totalProgress = calculateTotalProgress()
-        progressBar.updateProgress(totalProgress)
     }
 
     private func setupSectionTitle() {
@@ -166,7 +174,6 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
 
         tableView.register(RoomTableViewCell.self, forCellReuseIdentifier: "RoomCell")
         tableView.dataSource = self
-        tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
@@ -229,13 +236,9 @@ final class HomeViewController: UIViewController, roomViewControllerDelegate {
         addRoomButton.addTarget(self, action: #selector(didTapAddRoomButton), for: .touchUpInside)
     }
 
-    private func handleRoomSelection(_ room: Room) {
-        print("Selected room: \(room.name)")
-    }
-
     private func calculateTotalProgress() -> Float {
-        let totalTasks = rooms.reduce(into: 0) { $0 + ($1.totalZones ?? 0) }
-        let completedTasks = rooms.reduce(0) { $0 + ($1.completedZones ?? 0) }
+        let totalTasks = rooms.reduce(0) { $0 + $1.totalZones }
+        let completedTasks = rooms.reduce(0) { $0 + $1.completedZones }
         return totalTasks > 0 ? Float(completedTasks) / Float(totalTasks) : 0
     }
 
@@ -301,15 +304,6 @@ extension HomeViewController: UITableViewDataSource {
             self.navigationController?.pushViewController(roomViewController, animated: true)
         }
         return cell
-    }
-}
-
-// MARK: - UITableViewDelegate
-extension HomeViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let room = rooms[indexPath.row]
-        handleRoomSelection(room)
     }
 }
 

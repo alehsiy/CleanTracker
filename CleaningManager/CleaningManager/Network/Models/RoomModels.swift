@@ -14,18 +14,22 @@ struct Room: Codable, Identifiable {
     let id: String
     let name: String
     let icon: String
-    let completedZones: Int?
-    let totalZones: Int?
+    let completedZones: Int
+    let totalZones: Int
     let createdAt: Date
     let deletedAt: Date?
     let updatedAt: Date
 
     var progress: Float {
-        return Float(completedZones ?? 0) / Float(totalZones ?? 0)
+        return Float(completedZones) / Float(totalZones)
     }
 
     var progressText: String {
-        return "\(completedZones ?? 0)/\(totalZones ?? 0) tasks done"
+        if completedZones == 0 , totalZones == 0 {
+            return "Nothing to do yet!"
+        } else {
+            return "\(completedZones)/\(totalZones) tasks done"
+        }
     }
 
     var statusText: String? {

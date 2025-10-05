@@ -37,10 +37,11 @@ class RoomTableViewCell: UITableViewCell {
     private let actionButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Go", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        button.tintColor = .label
+        button.tintColor = .white
         button.semanticContentAttribute = .forceRightToLeft
-        button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 16
         button.layer.masksToBounds = true
         return button
@@ -141,8 +142,15 @@ class RoomTableViewCell: UITableViewCell {
 
     @objc
     private func didTapGoButton() {
-        UIView.animate(withDuration: 0.3) { [onTap] in
-            onTap?()
+        UIView.animate(withDuration: 0.1, animations: {
+            self.actionButton.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            self.actionButton.alpha = 0.8
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.actionButton.transform = .identity
+                self.actionButton.alpha = 1.0
+            }
+            self.onTap?()
             print("Go button tapped!")
         }
     }
