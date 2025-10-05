@@ -7,12 +7,14 @@
 
 import UIKit
 
-final class EntitySettingsModalScreen: UIViewController {
+final class EntitySettingsModalScreen: UIViewController, ModalScreenHandler {
     
     weak var delegate: AddItemModalScreenDelegate?
     var selectedIcon: String?
     var items: [Zone] = []
     var roomId: String?
+    var roomName: String?
+    var roomIcon: String?
 
     // MARK: - Private properties
     private let containerView = UIView()
@@ -56,6 +58,13 @@ final class EntitySettingsModalScreen: UIViewController {
         
         containerView.addSubview(iconsButtonsStackView)
         
+        containerView.addSubview(moreEmojisButton)
+            moreEmojisButton.addTarget(
+                self,
+                action: #selector(showEmojiPicker),
+                for: .touchUpInside
+            )
+        
         containerView.addSubview(descriptionForTextField)
         descriptionForTextField.font = .systemFont(ofSize: 14)
         descriptionForTextField.textAlignment = .left
@@ -63,7 +72,8 @@ final class EntitySettingsModalScreen: UIViewController {
         descriptionForTextField.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(nameOfItemTextField)
-        nameOfItemTextField.placeholder = "XXXXXXX"
+        
+        nameOfItemTextField.text = roomName ?? "Type new name"
         nameOfItemTextField.borderStyle = .roundedRect
         nameOfItemTextField.translatesAutoresizingMaskIntoConstraints = false
         
@@ -172,19 +182,21 @@ final class EntitySettingsModalScreen: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 32)
+        button.setTitleColor(.systemBlue, for: .normal)
         button.addTarget(self, action: #selector(iconTapped(_:)), for: .touchUpInside)
         button.layer.cornerRadius = 8
+        button.layer.borderWidth = 0
         button.backgroundColor = .systemGray6
         button.widthAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
         return button
     }
     
-    private lazy var iconsButtonsStackView: UIStackView = {
+    internal lazy var iconsButtonsStackView: UIStackView = {
         let kitchen = makeButtonForIconsStack(title: "🍽️")
         let bathroom = makeButtonForIconsStack(title: "🛁")
         let bed = makeButtonForIconsStack(title: "🪟")
         let wardrobe = makeButtonForIconsStack(title: "🛏️")
-        let garden = makeButtonForIconsStack(title: "...")
+        let garden = makeButtonForIconsStack(title: "🌸")
         
         let stack = UIStackView(arrangedSubviews: [
             kitchen, bathroom, bed, wardrobe, garden
@@ -196,6 +208,17 @@ final class EntitySettingsModalScreen: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         
         return stack
+    }()
+    
+    internal let moreEmojisButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("More Emojis", for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.layer.cornerRadius = 8
+        button.backgroundColor = .systemGray6
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -284,7 +307,7 @@ private extension EntitySettingsModalScreen {
             for: .touchUpInside
         )
         closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        closeButton.tintColor = .label
+        closeButton.tintColor = .systemBlue
         closeButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -325,7 +348,7 @@ private extension EntitySettingsModalScreen {
         NSLayoutConstraint.activate([
             descriptionForIcons.topAnchor.constraint(
                 equalTo: titleLabel.bottomAnchor,
-                constant: 16),
+                constant: 8),
             descriptionForIcons.leadingAnchor.constraint(
                 equalTo: containerView.leadingAnchor,
                 constant: 16),
@@ -343,14 +366,25 @@ private extension EntitySettingsModalScreen {
                 equalTo: containerView.trailingAnchor,
                 constant: -16),
             iconsButtonsStackView.heightAnchor.constraint(
-                equalToConstant: 40)
+                equalToConstant: 40),
+            
+            moreEmojisButton.topAnchor.constraint(
+                equalTo: iconsButtonsStackView.bottomAnchor,
+                constant: 8),
+            moreEmojisButton.centerXAnchor.constraint(
+                equalTo: containerView.centerXAnchor,
+                constant: 0),
+            moreEmojisButton.widthAnchor.constraint(
+                equalToConstant: 120),
+            moreEmojisButton.heightAnchor.constraint(
+                equalToConstant: 38),
         ])
     }
     
     private func setupNameOfRoomField() {
         NSLayoutConstraint.activate([
         descriptionForTextField.topAnchor.constraint(
-            equalTo: iconsButtonsStackView.bottomAnchor,
+            equalTo: moreEmojisButton.bottomAnchor,
             constant: 16),
         descriptionForTextField.leadingAnchor.constraint(
             equalTo: containerView.leadingAnchor,
@@ -376,14 +410,13 @@ private extension EntitySettingsModalScreen {
 
 private extension EntitySettingsModalScreen {
     @objc
-    private func iconTapped(_ sender: UIButton) {
-        for button in iconsButtonsStackView.arrangedSubviews.compactMap({
-            $0 as? UIButton
-        }) {
-            button.backgroundColor = .systemGray6
-        }
-        sender.backgroundColor = .lightGray
-        selectedIcon = sender.currentTitle
+    internal func showEmojiPicker() {
+        shared_showEmojiPicker()
+    }
+    
+    @objc
+    internal func iconTapped(_ sender: UIButton) {
+        shared_iconTapped(sender)
     }
     
     @objc
@@ -398,7 +431,7 @@ private extension EntitySettingsModalScreen {
             return
         }
         let itemName = nameOfItemTextField.text ?? ""
-        let itemIcon = selectedIcon ?? ""
+        let itemIcon = selectedIcon ?? roomIcon
         Task {
             try await RoomService.shared.updateRoom(id: id, name: itemName, icon: itemIcon)
             onAddingItem?()
