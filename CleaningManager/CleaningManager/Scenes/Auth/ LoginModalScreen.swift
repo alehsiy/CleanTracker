@@ -67,7 +67,6 @@ final class LoginModalScreen: UIViewController,  UITextFieldDelegate {
         titleLabel.font = .boldSystemFont(ofSize: 16)
         titleLabel.textAlignment = .center
         titleLabel.text = "Login"
-        titleLabel.textColor = .systemBlue
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.addSubview(closeButton)

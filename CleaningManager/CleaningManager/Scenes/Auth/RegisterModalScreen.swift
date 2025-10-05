@@ -73,7 +73,6 @@ final class RegisterModalScreen: UIViewController,  UITextFieldDelegate {
         titleLabel.font = .boldSystemFont(ofSize: 16)
         titleLabel.textAlignment = .center
         titleLabel.text = "Register"
-        titleLabel.textColor = .systemBlue
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.addSubview(closeButton)
