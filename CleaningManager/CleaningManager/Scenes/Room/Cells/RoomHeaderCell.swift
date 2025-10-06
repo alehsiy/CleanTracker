@@ -8,12 +8,21 @@
 import UIKit
 
 final class RoomHeaderCell: UICollectionViewCell {
-    private let iconImageView = UIImageView()
+    private let iconImageView = UILabel()
     private let titleLabel = UILabel()
     private let progressInfoLabel = UILabel()
     private let labelsView = UIStackView()
 
     static let reuseIdentifier = String(describing: RoomHeaderCell.self)
+
+    let adaptiveBlueWithAlpha = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor.systemBlue.withAlphaComponent(0.2)
+        default:
+            return UIColor.systemBlue.withAlphaComponent(0.1)
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,14 +30,10 @@ final class RoomHeaderCell: UICollectionViewCell {
         setupLayout()
     }
 
-    func configure(roomName: String, image: UIImage?, progress: String) {
+    func configure(roomName: String, image: String?, progress: String) {
         titleLabel.text = roomName
         progressInfoLabel.text = progress
-        if let image {
-            iconImageView.image = image
-        } else {
-            iconImageView.image = UIImage(systemName: "home")
-        }
+        iconImageView.text = image ?? "🏠"
     }
 
     @available(*, unavailable)
@@ -41,7 +46,7 @@ final class RoomHeaderCell: UICollectionViewCell {
 
 private extension RoomHeaderCell {
     func setupLayout() {
-        backgroundColor = .white
+        backgroundColor = adaptiveBlueWithAlpha
         layer.cornerRadius = 16
         clipsToBounds = true
 
@@ -49,12 +54,16 @@ private extension RoomHeaderCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         labelsView.translatesAutoresizingMaskIntoConstraints = false
 
-        iconImageView.contentMode = .scaleAspectFit
+        iconImageView.font = UIFont.systemFont(ofSize: 40)
+        iconImageView.textAlignment = .center
+        iconImageView.backgroundColor = .white
+        iconImageView.layer.cornerRadius = 30
+        iconImageView.layer.masksToBounds = true
 
         titleLabel.font = UIFont.boldSystemFont(ofSize: 22)
 
         progressInfoLabel.font = UIFont.systemFont(ofSize: 16)
-        progressInfoLabel.textColor = .gray
+        progressInfoLabel.textColor = .secondaryLabel
 
         labelsView.axis = .vertical
         labelsView.alignment = .leading
@@ -62,8 +71,8 @@ private extension RoomHeaderCell {
         NSLayoutConstraint.activate([
             iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 32),
-            iconImageView.heightAnchor.constraint(equalToConstant: 32),
+            iconImageView.widthAnchor.constraint(equalToConstant: 60),
+            iconImageView.heightAnchor.constraint(equalToConstant: 60),
 
             labelsView.centerYAnchor.constraint(equalTo: iconImageView.centerYAnchor),
             labelsView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),

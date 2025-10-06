@@ -12,6 +12,15 @@ final class RoomPlaceholderCell: UICollectionViewCell {
 
     static let reuseIdentifier = String(describing: RoomPlaceholderCell.self)
 
+    let adaptiveBlueWithAlpha = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor.systemBlue.withAlphaComponent(0.2)
+        default:
+            return UIColor.systemBlue.withAlphaComponent(0.1)
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(titleLabel)
@@ -23,7 +32,7 @@ final class RoomPlaceholderCell: UICollectionViewCell {
     }
 
     func setupLayout() {
-        backgroundColor = .white
+        backgroundColor = adaptiveBlueWithAlpha
         layer.cornerRadius = 16
         clipsToBounds = true
 
