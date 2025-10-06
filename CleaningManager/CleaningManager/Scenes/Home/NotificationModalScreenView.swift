@@ -24,7 +24,7 @@ struct NotificationModalScreenView: View {
 
             modalWindow
                 .padding()
-                .background(Color.white)
+                .background(Color(.systemBackground))
                 .cornerRadius(16)
                 .alert("Notifications is turned off", isPresented: $showAlert) {
                     Button("OK") {
@@ -99,7 +99,6 @@ struct NotificationModalScreenView: View {
                         HStack {
                             Text(weekdayName(for: selectedWeekday, short: true))
                                 .frame(width: 36, height: 14)
-                                .foregroundColor(.black)
                             Image(systemName: "chevron.down")
                         }
                         .padding(8)
@@ -130,7 +129,6 @@ struct NotificationModalScreenView: View {
                                     ? "\(selectedDayOfMonth)" : "Select"
                             )
                             .frame(width: 42, height: 14)
-                            .foregroundColor(.black)
                             Image(systemName: "chevron.down")
                                 .font(.system(size: 12, weight: .bold))
                         }

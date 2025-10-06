@@ -60,7 +60,7 @@ final class ProfileModalScreen: UIViewController {
     // MARK: - Setup
     private func setupUI() {
         view.addSubview(containerView)
-        containerView.backgroundColor = .white
+        containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 16
         containerView.translatesAutoresizingMaskIntoConstraints = false
 

@@ -290,7 +290,7 @@ private extension EntitySettingsModalScreen {
     private func setupContainerViewbaseUI() {
         view.backgroundColor = UIColor.gray.withAlphaComponent(0.5)
         view.addSubview(containerView)
-        containerView.backgroundColor = .white
+        containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 16
         containerView.translatesAutoresizingMaskIntoConstraints = false
         

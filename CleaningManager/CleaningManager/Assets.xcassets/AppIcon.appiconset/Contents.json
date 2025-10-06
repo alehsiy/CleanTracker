@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "иконка с метелкой2 ФИНАЛ.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -12,6 +13,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "иконка с метелкой2 ФИНАЛ2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -23,6 +25,7 @@
           "value" : "tinted"
         }
       ],
+      "filename" : "иконка с метелкой2 ФИНАЛ3.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
