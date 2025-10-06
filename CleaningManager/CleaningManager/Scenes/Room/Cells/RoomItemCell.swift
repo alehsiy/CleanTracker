@@ -102,13 +102,13 @@ extension RoomItemCell {
             actionButton.setTitle("Clean", for: .normal)
             actionButton.addTarget(self, action: #selector(cleanButtonPressed(_:)), for: .touchUpInside)
         } else {
-            actionButton.setTitle("Done", for: .normal)
-            actionButton.backgroundColor = .systemBlue
+            actionButton.setTitle("✓", for: .normal)
+            actionButton.backgroundColor = .systemGreen
         }
         if let nextDate {
-            infoLabel.text = "\(String(describing: cleaningFrequency).capitalized) ・ Next date: \(dateFormatter.string(from: nextDate))"
+            infoLabel.text = "\(String(describing: cleaningFrequency).capitalized)・Next date: \(dateFormatter.string(from: nextDate))"
         } else {
-            infoLabel.text = "\(String(describing: cleaningFrequency).capitalized) ・ No next date yet"
+            infoLabel.text = "\(String(describing: cleaningFrequency).capitalized)・No next date yet"
         }
     }
 }
