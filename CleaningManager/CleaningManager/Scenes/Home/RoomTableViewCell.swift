@@ -65,6 +65,15 @@ class RoomTableViewCell: UITableViewCell {
         return label
     }()
 
+    let adaptiveBlueWithAlpha = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor.systemBlue.withAlphaComponent(0.2)
+        default:
+            return UIColor.systemBlue.withAlphaComponent(0.1)
+        }
+    }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -81,7 +90,7 @@ class RoomTableViewCell: UITableViewCell {
         contentView.backgroundColor = .clear
         selectionStyle = .none
 
-        containerView.backgroundColor = .systemBlue.withAlphaComponent(0.1)
+        containerView.backgroundColor = adaptiveBlueWithAlpha
         containerView.layer.cornerRadius = 16
         containerView.layer.cornerCurve = .continuous
         containerView.translatesAutoresizingMaskIntoConstraints = false

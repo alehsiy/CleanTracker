@@ -14,6 +14,15 @@ class ProgressBlock: UIView {
     private let percentageLabel = UILabel()
     private let containerView = UIView()
 
+    let adaptiveBlueWithAlpha = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor.systemBlue.withAlphaComponent(0.2)
+        default:
+            return UIColor.systemBlue.withAlphaComponent(0.1)
+        }
+    }
+
     var progress: Float = 0 {
         didSet {
             updateProgress(progress)
@@ -32,7 +41,7 @@ class ProgressBlock: UIView {
 
     // MARK: - Setup
     private func setupContainer() {
-        containerView.backgroundColor = .systemBlue.withAlphaComponent(0.1)
+        containerView.backgroundColor = adaptiveBlueWithAlpha
         containerView.layer.cornerRadius = 16
         containerView.layer.cornerCurve = .continuous
         containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,13 +75,12 @@ class ProgressBlock: UIView {
     }
 
     private func setupLayers() {
-        trackLayer.strokeColor = UIColor.systemGray5.cgColor
+        trackLayer.strokeColor = UIColor.systemGray4.cgColor
         trackLayer.lineWidth = 14
         trackLayer.fillColor = UIColor.clear.cgColor
         trackLayer.lineCap = .round
         containerView.layer.addSublayer(trackLayer)
 
-        // Progress layer (заполняемая часть)
         progressLayer.strokeColor = UIColor.systemBlue.cgColor
         progressLayer.lineWidth = 14
         progressLayer.fillColor = UIColor.clear.cgColor
