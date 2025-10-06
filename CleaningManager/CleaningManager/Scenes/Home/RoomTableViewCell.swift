@@ -115,8 +115,8 @@ class RoomTableViewCell: UITableViewCell {
 
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
-            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             containerView.heightAnchor.constraint(equalToConstant: 100),
 

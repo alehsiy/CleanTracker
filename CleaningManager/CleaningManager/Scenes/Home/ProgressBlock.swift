@@ -57,8 +57,8 @@ class ProgressBlock: UIView {
 
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 30),
-            containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -30),
+            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             homeImageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
@@ -75,7 +75,7 @@ class ProgressBlock: UIView {
     }
 
     private func setupLayers() {
-        trackLayer.strokeColor = UIColor.systemGray4.cgColor
+        trackLayer.strokeColor = UIColor.systemGray2.cgColor
         trackLayer.lineWidth = 14
         trackLayer.fillColor = UIColor.clear.cgColor
         trackLayer.lineCap = .round

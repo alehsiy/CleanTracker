@@ -33,15 +33,23 @@ import UIKit
 final class RoomItemCell: UICollectionViewCell {
     var itemId: String?
     var onCleanItem: (() -> Void)?
-    private let iconView = UIImageView()
+    private let iconView = UILabel()
     private let nameLabel = UILabel()
     private let lastDateLabel = UILabel()
     private let infoLabel = UILabel()
     private let actionButton = UIButton(type: .system)
-    private let infoView = UIView()
     private let stackView = UIStackView()
 
     static let reuseIdentifier = String(describing: RoomItemCell.self)
+
+    let adaptiveBlueWithAlpha = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor.systemBlue.withAlphaComponent(0.2)
+        default:
+            return UIColor.systemBlue.withAlphaComponent(0.1)
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,7 +66,7 @@ final class RoomItemCell: UICollectionViewCell {
 
 extension RoomItemCell {
     func configure(info: Zone) {
-        iconView.image = info.icon.asImage() ?? UIImage(systemName: "questionmark")
+        iconView.text = info.icon ?? "?"
         nameLabel.text = info.name
 //        lastDateLabel.text = info.lastCleanedAt?.ISO8601Format()
 //        actionButton.setTitle("Done", for: .normal)
@@ -80,11 +88,7 @@ extension RoomItemCell {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-        if !icon.isEmpty, let image = icon.asImage() {
-            iconView.image = image
-        } else {
-            iconView.image = UIImage(systemName: "questionmark")
-        }
+        iconView.text = icon
         nameLabel.text = title
         if let lastDate {
             lastDateLabel.text = "Last date cleaned: \(dateFormatter.string(from: lastDate))"
@@ -114,20 +118,18 @@ private extension RoomItemCell {
         contentView.addSubview(iconView)
         contentView.addSubview(actionButton)
         contentView.addSubview(stackView)
-        infoView.addSubview(lastDateLabel)
         stackView.addArrangedSubview(nameLabel)
-        stackView.addArrangedSubview(infoView)
+        stackView.addArrangedSubview(lastDateLabel)
         stackView.addArrangedSubview(infoLabel)
         stackView.axis = .vertical
         stackView.distribution = .fill
-        stackView.spacing = 25
+        stackView.spacing = 8
         stackView.alignment = .leading
     }
 
     func setupLayout() {
         iconView.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        infoView.translatesAutoresizingMaskIntoConstraints = false
         actionButton.translatesAutoresizingMaskIntoConstraints = false
         lastDateLabel.translatesAutoresizingMaskIntoConstraints = false
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -135,12 +137,16 @@ private extension RoomItemCell {
 
         layer.cornerRadius = 16
         clipsToBounds = true
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = adaptiveBlueWithAlpha
 
         actionButton.layer.cornerRadius = 15
         actionButton.clipsToBounds = true
 
-        iconView.contentMode = .scaleAspectFit
+        iconView.font = UIFont.systemFont(ofSize: 25)
+        iconView.textAlignment = .center
+        iconView.backgroundColor = .white
+        iconView.layer.cornerRadius = 20
+        iconView.layer.masksToBounds = true
 
         // MARK: Fonts
 
@@ -152,8 +158,8 @@ private extension RoomItemCell {
 
         // MARK: Colors
 
-        lastDateLabel.textColor = .gray
-        infoLabel.textColor = .gray
+        lastDateLabel.textColor = .secondaryLabel
+        infoLabel.textColor = .secondaryLabel
         actionButton.titleLabel?.textColor = .white
 
         // MARK: Constraints
@@ -161,11 +167,8 @@ private extension RoomItemCell {
         NSLayoutConstraint.activate([
             iconView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             iconView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 32),
-            iconView.heightAnchor.constraint(equalToConstant: 32),
-
-            lastDateLabel.leadingAnchor.constraint(equalTo: infoView.leadingAnchor),
-            infoView.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 40),
+            iconView.heightAnchor.constraint(equalToConstant: 40),
 
             stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             stackView.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
@@ -176,7 +179,7 @@ private extension RoomItemCell {
             actionButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             actionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             actionButton.widthAnchor.constraint(equalToConstant: 65),
-            actionButton.heightAnchor.constraint(equalToConstant: 32),
+            actionButton.heightAnchor.constraint(equalToConstant: 32)
         ])
     }
 

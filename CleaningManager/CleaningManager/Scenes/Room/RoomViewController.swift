@@ -45,7 +45,7 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         showItems(roomId: roomId!)
-        view.backgroundColor = UIColor(white: 0.97, alpha: 1)
+        view.backgroundColor = .systemBackground
 
         setupAddItemButton()
         setupNavigationBar()
@@ -106,20 +106,20 @@ final class RoomViewController: UIViewController, UICollectionViewDataSource {
                 if room.totalZones > 0 {
                     cell.configure(
                         roomName: room.name,
-                        image: room.icon.asImage(),
+                        image: room.icon,
                         progress: room.progressText
                     )
                 } else {
                     cell.configure(
                         roomName: room.name,
-                        image: room.icon.asImage(),
+                        image: room.icon,
                         progress: "No zones yet"
                     )
                 }
             } else {
                 cell.configure(
                     roomName: "Oops!",
-                    image: "😔".asImage(),
+                    image: "😔",
                     progress: "We can't find your room"
                 )
             }
@@ -177,7 +177,7 @@ private extension RoomViewController {
             } else {
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(160)
+                    heightDimension: .absolute(140)
                 )
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
