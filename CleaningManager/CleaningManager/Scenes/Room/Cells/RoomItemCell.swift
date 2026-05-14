@@ -68,11 +68,6 @@ extension RoomItemCell {
     func configure(info: Zone) {
         iconView.text = info.icon ?? "?"
         nameLabel.text = info.name
-//        lastDateLabel.text = info.lastCleanedAt?.ISO8601Format()
-//        actionButton.setTitle("Done", for: .normal)
-//        actionButton.titleLabel?.textColor = .white
-//        actionButton.tintColor = .white
-//        infoLabel.text = "\(String(describing: cleaningFrequency)) ・ \(String(describing: nextDate))"
     }
 }
 
